@@ -1,0 +1,40 @@
+# Deploy the dashboard to Vercel (via GitHub)
+
+The dashboard is a static Vite + React SPA in [`dashboard/`](../dashboard). Data is
+currently bundled (`dashboard/src/data.js`) — no runtime backend, env vars, or secrets.
+
+## One-time setup
+
+1. Push this repo to GitHub (already at `LagoJournal/Kine`).
+2. In [Vercel](https://vercel.com/new), **Import** the `LagoJournal/Kine` repo.
+3. **Root Directory** → set to `dashboard`. This is the only required manual setting —
+   the repo root holds the skill, not the app.
+4. Framework preset auto-detects as **Vite**. Build command `npm run build`, output
+   `dist`, install `npm install` — all read from [`dashboard/vercel.json`](../dashboard/vercel.json).
+5. Deploy.
+
+Every push to `master` redeploys production; every branch/PR gets a preview URL.
+
+## Custom domain — `kine.agustinlago.xyz`
+
+1. Vercel project → **Settings → Domains** → add `kine.agustinlago.xyz`.
+2. At the `agustinlago.xyz` DNS provider, add the record Vercel shows:
+   - **CNAME** `kine` → `cname.vercel-dns.com`
+   (If the provider rejects a CNAME on that host, use the **A** record Vercel lists instead.)
+3. Vercel provisions the TLS cert automatically once DNS propagates.
+
+No app change needed — it's a subdomain root, so Vite's default `base: '/'` is correct.
+
+## Notes
+
+- **Aqus dependency** — `@agustin/aqus` installs from the public GitHub repo
+  `LagoJournal/Aqus#v0.2.2`, so Vercel installs it with no extra auth.
+- **Node** — pinned to 22 via [`dashboard/.nvmrc`](../dashboard/.nvmrc).
+- **SPA rewrites** — `vercel.json` rewrites all paths to `index.html` so deep links
+  (`/guia`, `/pacientes`, `/perfil`) don't 404 on refresh/bookmark.
+- **Lockfile** — `package-lock.json` is committed, so builds are reproducible (`npm ci`).
+
+## Live data (later)
+
+When the dashboard reads the real `kine-data.json` that `/kine-sync` builds on Drive,
+swap `data.js` for a fetch and add the dataset URL as a Vercel environment variable.

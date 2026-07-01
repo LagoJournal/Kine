@@ -9,8 +9,9 @@ The skill lives in [`skills/kine/`](skills/kine/).
 > The product speaks **Argentine Spanish** to the kinesiologist (Córdoba, Argentina).
 > Code and this documentation are in English.
 >
-> A companion **web dashboard** (Aqus design system) is planned to visualize each
-> patient's history from the synced data. It's not included in this repo yet.
+> A companion **web dashboard** (Aqus design system) visualizes each patient's history
+> from the synced data. It lives in [`dashboard/`](dashboard/) and deploys to Vercel at
+> **kine.agustinlago.xyz** — see [`docs/deploy-dashboard.md`](docs/deploy-dashboard.md).
 
 ## What it does
 
