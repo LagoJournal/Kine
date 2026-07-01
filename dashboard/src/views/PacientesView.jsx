@@ -110,7 +110,7 @@ export function PacientesView({ onOpen, onNuevaSesion }) {
           {loading && (
             <Stack gap={5}>
               <Skeleton width="100%" height={52} />
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 20 }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))', gap: 20 }}>
                 {Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} width="100%" height={150} />)}
               </div>
             </Stack>
@@ -148,15 +148,15 @@ export function PacientesView({ onOpen, onNuevaSesion }) {
                   {groups.map((g) => (
                     <Stack key={g.key} gap={3}>
                       <Stack direction="row" gap={3} align="center">
-                        <h2 style={{ margin: 0, font: 'var(--text-heading)', color: 'var(--accent-text)', whiteSpace: 'nowrap' }}>
+                        <h2 style={{ margin: 0, font: 'var(--text-heading)', color: 'var(--accent-text)', minWidth: 0, overflowWrap: 'anywhere' }}>
                           {g.key}
                         </h2>
-                        <div style={{ flex: 1 }}><Divider /></div>
-                        <span style={{ ...caption, whiteSpace: 'nowrap' }}>
+                        <div style={{ flex: 1, minWidth: 12 }}><Divider /></div>
+                        <span style={{ ...caption, whiteSpace: 'nowrap', flex: '0 0 auto' }}>
                           {g.items.length} {g.items.length === 1 ? 'persona' : 'personas'}
                         </span>
                       </Stack>
-                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 20 }}>
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))', gap: 20 }}>
                         {g.items.map((p) => <PacienteCard key={p.id ?? fullName(p)} p={p} onOpen={() => onOpen(p.id)} />)}
                       </div>
                     </Stack>

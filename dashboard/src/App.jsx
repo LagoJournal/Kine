@@ -85,8 +85,8 @@ export function App() {
         onBrandClick={() => go('/pacientes')}
         action={
           <Stack direction="row" gap={2} align="center">
-            <Button variant="primary" size="sm" icon={<i className="ph ph-plus" />} onClick={nuevaSesion}>
-              Nueva sesión
+            <Button variant="primary" size="sm" icon={<i className="ph ph-plus" />} onClick={nuevaSesion} title="Nueva sesión">
+              <span className="nav-cta-label">Nueva sesión</span>
             </Button>
             <ThemeToggle dark={dark} onToggle={setDark} />
           </Stack>

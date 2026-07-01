@@ -289,7 +289,7 @@ export function PerfilView() {
                   <Stack gap={2}>
                     <FieldLabel icon="ph-ruler">Cómo mide el progreso</FieldLabel>
                     {(pat.metricas ?? []).length > 0 ? (
-                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: 12 }}>
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 150px), 1fr))', gap: 12 }}>
                         {pat.metricas.map((u, i) => (
                           <div key={`${u.etiqueta}-${i}`} style={{ background: 'var(--surface-raised)', borderRadius: 'var(--radius-md)', padding: 'var(--space-3)' }}>
                             <Stack gap={1}>
