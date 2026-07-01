@@ -12,6 +12,23 @@ const LINKS = [
   { href: '/perfil', label: 'Tu voz' },
 ]
 
+const ROUTES = ['/guia', '/pacientes', '/perfil']
+
+// URL <-> view state, so browser back/forward cycles through the views the user
+// visited instead of leaving the app.
+function parsePath(pathname) {
+  const patient = pathname.match(/^\/pacientes\/([^/]+)\/?$/)
+  if (patient) return { route: '/pacientes', pacienteId: decodeURIComponent(patient[1]) }
+  const base = pathname.replace(/\/+$/, '') || '/pacientes'
+  return { route: ROUTES.includes(base) ? base : '/pacientes', pacienteId: null }
+}
+
+function pathFor(route, pacienteId) {
+  return route === '/pacientes' && pacienteId != null
+    ? `/pacientes/${encodeURIComponent(pacienteId)}`
+    : route
+}
+
 function ThemeToggle({ dark, onToggle }) {
   return (
     <Tooltip label={dark ? 'Modo claro' : 'Modo oscuro'}>
@@ -58,8 +75,9 @@ function MockBanner({ dismissed, onDismiss }) {
 }
 
 export function App() {
-  const [route, setRoute] = React.useState('/pacientes')
-  const [pacienteId, setPacienteId] = React.useState(null)
+  const first = parsePath(window.location.pathname)
+  const [route, setRoute] = React.useState(first.route)
+  const [pacienteId, setPacienteId] = React.useState(first.pacienteId)
   const [dark, setDark] = React.useState(false)
   const [bannerDismissed, setBannerDismissed] = React.useState(false)
   const [nuevaOpen, setNuevaOpen] = React.useState(false)
@@ -68,7 +86,39 @@ export function App() {
     document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light')
   }, [dark])
 
-  const go = (href) => { setPacienteId(null); setRoute(href) }
+  // Sync view state with browser history: seed the current entry, then let
+  // back/forward restore prior views via popstate.
+  React.useEffect(() => {
+    window.history.replaceState(
+      { route: first.route, pacienteId: first.pacienteId },
+      '',
+      pathFor(first.route, first.pacienteId),
+    )
+    const onPop = (e) => {
+      const s = e.state ?? parsePath(window.location.pathname)
+      setRoute(s.route)
+      setPacienteId(s.pacienteId ?? null)
+      setNuevaOpen(false)
+    }
+    window.addEventListener('popstate', onPop)
+    return () => window.removeEventListener('popstate', onPop)
+    // `first` is captured once on mount by design.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  const navigate = (nextRoute, nextPacienteId = null) => {
+    setRoute(nextRoute)
+    setPacienteId(nextPacienteId)
+    window.history.pushState(
+      { route: nextRoute, pacienteId: nextPacienteId },
+      '',
+      pathFor(nextRoute, nextPacienteId),
+    )
+  }
+
+  const go = (href) => navigate(href, null)
+  const openPaciente = (id) => navigate('/pacientes', id)
+  const backToList = () => navigate('/pacientes', null)
   const nuevaSesion = () => setNuevaOpen(true)
 
   // Hide the banner on Tu voz (it owns the full connect control) and while
@@ -98,10 +148,10 @@ export function App() {
       <main>
         {route === '/guia' && <GuiaView />}
         {route === '/pacientes' && pacienteId == null && (
-          <PacientesView onOpen={(id) => setPacienteId(id)} onNuevaSesion={nuevaSesion} />
+          <PacientesView onOpen={openPaciente} onNuevaSesion={nuevaSesion} />
         )}
         {route === '/pacientes' && pacienteId != null && (
-          <PacienteView id={pacienteId} onBack={() => setPacienteId(null)} />
+          <PacienteView id={pacienteId} onBack={backToList} />
         )}
         {route === '/perfil' && <PerfilView />}
       </main>
