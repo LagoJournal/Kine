@@ -181,7 +181,7 @@ export const progressState = (paciente) => {
     : deriveProgressKey(Array.isArray(paciente?.sesiones) ? paciente.sesiones : [], paciente?.cantidadSesiones)
   const base = PROGRESS_VARIANTS[key]
   const note = paciente?.estadoNota
-    ?? (GENDERED_NOTE[key] ? GENDERED_NOTE[key](paciente?.genero) : base.note)
+    || (GENDERED_NOTE[key] ? GENDERED_NOTE[key](paciente?.genero) : base.note)
   return { key, ...base, note }
 }
 
