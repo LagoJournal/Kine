@@ -17,11 +17,11 @@
       "Plan de Tratamiento",
       "Observaciones"
     ],
-    "unidades": {
-      "rom": "grados",
-      "dolor": "EVA 0-10",
-      "fuerza": "Daniels 0-5"
-    },
+    "metricas": [
+      { "etiqueta": "Rango de movimiento", "escala": "grados" },
+      { "etiqueta": "Dolor", "escala": "EVA 0-10 (menos es mejor)" },
+      { "etiqueta": "Fuerza", "escala": "Daniels 0-5" }
+    ],
     "reglas": [
       "Usar terminología anatómica completa (no abreviar nombres de músculos).",
       "Incluir unidades en toda evaluación.",

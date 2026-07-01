@@ -17,7 +17,11 @@
         "Plan de Tratamiento",
         "Observaciones"
       ],
-      "unidades": { "rom": "grados", "dolor": "EVA 0-10", "fuerza": "Daniels 0-5" },
+      "metricas": [
+        { "etiqueta": "Rango de movimiento", "escala": "grados" },
+        { "etiqueta": "Dolor", "escala": "EVA 0-10 (menos es mejor)" },
+        { "etiqueta": "Fuerza", "escala": "Daniels 0-5" }
+      ],
       "reglas": [
         "Usar terminología anatómica completa.",
         "Incluir unidades en toda evaluación.",
@@ -31,7 +35,11 @@
       "nombre": "María",
       "apellido": "García",
       "edad": 35,
+      "genero": "femenino",
       "diagnostico": "Molestias en ambas rodillas al bajar escaleras y agacharse",
+      "motivo": "Me molestan las rodillas al bajar escaleras y al agacharme",
+      "estado": "cada-vez-mejor",
+      "estadoNota": null,
       "desde": "2026-06-09",
       "ultimaSesion": "2026-06-23",
       "cantidadSesiones": 8,
@@ -66,7 +74,11 @@
       "nombre": "Juan",
       "apellido": "Pérez",
       "edad": 52,
+      "genero": "masculino",
       "diagnostico": "Dolor de hombro derecho al elevar el brazo",
+      "motivo": "Me duele el hombro derecho cuando levanto el brazo",
+      "estado": "cada-vez-mejor",
+      "estadoNota": null,
       "desde": "2026-06-16",
       "ultimaSesion": "2026-06-23",
       "cantidadSesiones": 4,
