@@ -1,6 +1,10 @@
 const CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID
 const SCOPE = 'https://www.googleapis.com/auth/drive.readonly'
 const STORAGE_KEY = 'kine.driveToken'
+const SIGNIN_TIMEOUT_MS = 30_000
+// Treat tokens as expired a little early so a Drive call made right after
+// getStoredToken() doesn't land on an already-expired token.
+const EXPIRY_BUFFER_MS = 30_000
 
 let gisLoadPromise = null
 
@@ -22,6 +26,14 @@ function loadGisScript() {
   return gisLoadPromise
 }
 
+// Kick off the GIS script load as soon as this module runs (fire-and-forget),
+// so by the time a user clicks "Conectar" it's usually already cached — a
+// signIn() that has to await a fresh network fetch first can lose the
+// original click's user-activation in some browsers and get its popup blocked.
+if (isConfigured()) {
+  loadGisScript().catch(() => {})
+}
+
 export function isConfigured() {
   return Boolean(CLIENT_ID)
 }
@@ -29,8 +41,17 @@ export function isConfigured() {
 export function getStoredToken() {
   const raw = sessionStorage.getItem(STORAGE_KEY)
   if (!raw) return null
-  const { accessToken, expiresAt } = JSON.parse(raw)
-  if (Date.now() >= expiresAt) {
+
+  let parsed
+  try {
+    parsed = JSON.parse(raw)
+  } catch {
+    sessionStorage.removeItem(STORAGE_KEY)
+    return null
+  }
+
+  const { accessToken, expiresAt } = parsed
+  if (!accessToken || !expiresAt || Date.now() >= expiresAt - EXPIRY_BUFFER_MS) {
     sessionStorage.removeItem(STORAGE_KEY)
     return null
   }
@@ -53,7 +74,7 @@ export async function signIn() {
   }
   await loadGisScript()
 
-  return new Promise((resolve, reject) => {
+  const tokenPromise = new Promise((resolve, reject) => {
     const tokenClient = window.google.accounts.oauth2.initTokenClient({
       client_id: CLIENT_ID,
       scope: SCOPE,
@@ -69,6 +90,12 @@ export async function signIn() {
     })
     tokenClient.requestAccessToken({ prompt: '' })
   })
+
+  const timeout = new Promise((_, reject) => {
+    setTimeout(() => reject(new Error('Se agotó el tiempo de espera de Google')), SIGNIN_TIMEOUT_MS)
+  })
+
+  return Promise.race([tokenPromise, timeout])
 }
 
 /** Best-effort revoke + always clears the local token. */
