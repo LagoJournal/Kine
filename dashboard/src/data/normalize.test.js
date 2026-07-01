@@ -28,4 +28,9 @@ describe('normalizeDataset', () => {
     expect(() => normalizeDataset({})).not.toThrow()
     expect(normalizeDataset({}).pacientes).toEqual([])
   })
+
+  it('treats an unset clinica ("") as no consultorios, not a stray blank one', () => {
+    const raw = { perfil: { identidad: { clinica: '' }, patrones: {} }, pacientes: [] }
+    expect(normalizeDataset(raw).perfil.identidad.consultorios).toEqual([])
+  })
 })
