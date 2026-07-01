@@ -1,10 +1,11 @@
 import React from 'react'
 import {
   Section, Container, Stack, Card, PageHeader, Avatar, Badge, Tag, Button,
-  Input, Textarea, Divider, Alert, Skeleton, IconButton,
+  Input, Textarea, Divider, Alert, Skeleton, IconButton, Dialog,
 } from '@agustin/aqus'
 import { useData } from '../data/DataContext.jsx'
 import { nameInitials } from '../data/helpers.js'
+import { buildPatronesPrompt } from '../data/prompt.js'
 
 const heading = { margin: 0, font: 'var(--text-heading-sm)', color: 'var(--text-primary)' }
 const hint = { margin: 0, fontSize: 'var(--text-body-sm)', color: 'var(--text-secondary)' }
@@ -72,9 +73,11 @@ export function PerfilView() {
   const { perfil, source, status, error, driveConfigured, connect, disconnect } = useData()
   const [loading, setLoading] = React.useState(true)
   const [editing, setEditing] = React.useState(false)
-  const [saved, setSaved] = React.useState(false)
+  const [handoff, setHandoff] = React.useState(null) // prompt string while the Dialog is open
+  const [copied, setCopied] = React.useState(false)
   const [ident, setIdent] = React.useState(perfil.identidad)
   const [pat, setPat] = React.useState(perfil.patrones)
+  const originalRef = React.useRef(null) // profile snapshot captured when editing starts
 
   React.useEffect(() => {
     const t = setTimeout(() => setLoading(false), 400)
@@ -107,7 +110,30 @@ export function PerfilView() {
   const addTo = (k) => (v) => setPat((s) => ({ ...s, [k]: [...(s[k] ?? []), v] }))
   const rmFrom = (k) => (v) => setPat((s) => ({ ...s, [k]: (s[k] ?? []).filter((x) => x !== v) }))
 
-  const save = () => { setEditing(false); setSaved(true) }
+  // Snapshot the profile when editing starts, so we can diff on save.
+  const startEditing = () => {
+    originalRef.current = JSON.parse(JSON.stringify({ identidad: ident, patrones: pat }))
+    setEditing(true)
+  }
+
+  const pendingPrompt = editing
+    ? buildPatronesPrompt(originalRef.current, { identidad: ident, patrones: pat })
+    : null
+
+  const save = () => {
+    setEditing(false)
+    if (pendingPrompt) { setHandoff(pendingPrompt); setCopied(false) }
+  }
+
+  const copyPrompt = async () => {
+    try {
+      await navigator.clipboard.writeText(handoff)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    } catch {
+      // Insecure context / no clipboard permission — the prompt text stays selectable.
+    }
+  }
 
   if (loading) {
     return (
@@ -132,14 +158,19 @@ export function PerfilView() {
             subtitle="Tu forma de trabajar, que guía cada informe que arma Kine."
             action={
               editing
-                ? <Button variant="primary" onClick={save}>Guardar cambios</Button>
-                : <Button variant="primary" icon={<i className="ph ph-pencil-simple" />} onClick={() => { setEditing(true); setSaved(false) }}>
+                ? <Button
+                    variant="primary"
+                    onClick={save}
+                    disabled={!pendingPrompt}
+                    title={!pendingPrompt ? 'No hay cambios para aplicar' : undefined}
+                  >
+                    Guardar cambios
+                  </Button>
+                : <Button variant="primary" icon={<i className="ph ph-pencil-simple" />} onClick={startEditing}>
                     Editar patrones
                   </Button>
             }
           />
-
-          {saved && <Alert tone="success">Cambios guardados. Kine los usa en el próximo informe.</Alert>}
 
           {/* Identity — reads as a profile header */}
           <Card>
@@ -342,6 +373,49 @@ export function PerfilView() {
           </Card>
         </Stack>
       </Container>
+
+      <Dialog
+        open={handoff != null}
+        onClose={() => setHandoff(null)}
+        title="Aplicá tus cambios en Claude"
+        actions={
+          <>
+            <Button variant="ghost" onClick={() => setHandoff(null)}>Cerrar</Button>
+            <Button variant="primary" icon={<i className="ph ph-copy" />} onClick={copyPrompt}>
+              {copied ? 'Copiado' : 'Copiar prompt'}
+            </Button>
+          </>
+        }
+      >
+        <Stack gap={3}>
+          <span style={hint}>Copiá esto y pegáselo a Kine en Claude; ahí se guardan tus cambios.</span>
+          <div
+            style={{
+              background: 'var(--surface-raised)',
+              borderRadius: 'var(--radius-md)',
+              padding: 'var(--space-3)',
+              whiteSpace: 'pre-wrap',
+              fontSize: 'var(--text-body-sm)',
+              color: 'var(--text-primary)',
+            }}
+          >
+            {handoff}
+          </div>
+          <span style={{ fontSize: 'var(--text-caption)', color: 'var(--text-muted)' }}>
+            Hasta que Claude los guarde, acá los ves como vista previa.
+          </span>
+          <div>
+            <Button
+              variant="ghost"
+              size="sm"
+              icon={<i className="ph ph-arrow-square-out" />}
+              onClick={() => window.open('https://claude.ai', '_blank', 'noopener')}
+            >
+              Abrir Claude
+            </Button>
+          </div>
+        </Stack>
+      </Dialog>
     </Section>
   )
 }
