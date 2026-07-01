@@ -28,6 +28,7 @@ const parseParts = (iso) => {
   const mm = m[2] ? Number(m[2]) : null
   const dd = m[3] ? Number(m[3]) : null
   if (mm != null && (mm < 1 || mm > 12)) return null
+  if (dd != null && (dd < 1 || dd > 31)) return null
   return { y: Number(m[1]), m: mm, d: dd }
 }
 
@@ -35,8 +36,8 @@ const parseParts = (iso) => {
 export const shortDate = (iso) => {
   const p = parseParts(iso)
   if (!p) return null
-  if (p.d) return `${p.d} ${MONTHS[p.m - 1]}`
-  if (p.m) return `${MONTHS[p.m - 1]} ${p.y}`
+  if (p.d != null) return `${p.d} ${MONTHS[p.m - 1]}`
+  if (p.m != null) return `${MONTHS[p.m - 1]} ${p.y}`
   return `${p.y}`
 }
 
@@ -44,8 +45,8 @@ export const shortDate = (iso) => {
 export const longDate = (iso) => {
   const p = parseParts(iso)
   if (!p) return null
-  if (p.d) return `${p.d} de ${MONTHS_LONG[p.m - 1]}`
-  if (p.m) return `${MONTHS_LONG[p.m - 1]} de ${p.y}`
+  if (p.d != null) return `${p.d} de ${MONTHS_LONG[p.m - 1]}`
+  if (p.m != null) return `${MONTHS_LONG[p.m - 1]} de ${p.y}`
   return `${p.y}`
 }
 
@@ -55,7 +56,7 @@ export const daysAgo = (iso, today = '2026-07-01') => {
   const now = parseParts(today)
   if (!p || !now) return null
 
-  if (p.d) {
+  if (p.d != null) {
     const ms = new Date(today) - new Date(iso)
     if (Number.isNaN(ms)) return null
     const d = Math.round(ms / 86_400_000)
@@ -65,7 +66,7 @@ export const daysAgo = (iso, today = '2026-07-01') => {
     const w = Math.round(d / 7)
     return w === 1 ? 'hace 1 semana' : `hace ${w} semanas`
   }
-  if (p.m) {
+  if (p.m != null) {
     const months = (now.y - p.y) * 12 + ((now.m ?? 1) - p.m)
     if (months <= 0) return 'este mes'
     return months === 1 ? 'hace 1 mes' : `hace ${months} meses`
@@ -111,12 +112,6 @@ export const parseMetric = (valor) => {
 }
 
 /**
- * The warm, sensitive read of how someone is coming along — a feeling, never a
- * clinical score. Each variant pairs a phrase, a Phosphor icon, and a token
- * color so meaning is carried by word + shape + color together, never color
- * alone. Driven by the pain trend when it exists, else by how far along they are.
- */
-/**
  * Pick the phrasing that agrees with the patient's gender, as recorded in the
  * report. Accepts 'f'/'femenino'/'m'/'masculino' (any case); falls back to the
  * neutral wording when the report doesn't say.
@@ -128,6 +123,12 @@ export const gendered = (genero, { f, m, n }) => {
   return n
 }
 
+/**
+ * The warm, sensitive read of how someone is coming along — a feeling, never a
+ * clinical score. Each variant pairs a phrase, a Phosphor icon, and a token
+ * color so meaning is carried by word + shape + color together, never color
+ * alone. Driven by the pain trend when it exists, else by how far along they are.
+ */
 export const PROGRESS_VARIANTS = {
   'recien-empezando': { label: 'Recién empezando', note: 'Las primeras sesiones, conociéndose.', icon: 'ph-seedling', color: 'var(--accent-mid)', tone: 'neutral' },
   'en-camino':        { label: 'En camino',        note: 'Avanza, de a poco.',                   icon: 'ph-path',       color: 'var(--accent)',     tone: 'accent' },

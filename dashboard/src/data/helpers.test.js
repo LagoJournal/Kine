@@ -8,6 +8,9 @@ describe('date helpers accept variable granularity', () => {
     expect(shortDate('2026')).toBe('2026')
     expect(shortDate('')).toBe(null)
     expect(shortDate(undefined)).toBe(null)
+    expect(shortDate('2026-13')).toBe(null)
+    expect(shortDate('2026-06-00')).toBe(null)
+    expect(shortDate('2026-06-40')).toBe(null)
   })
 
   it('longDate formats full / month / year', () => {
