@@ -1,0 +1,25 @@
+/* Global canvas — applies the Aqus semantic tokens to the document so the
+   background, text and font follow the active theme (light / dark). Without
+   this, the page renders on the browser's default white. */
+
+* { box-sizing: border-box; }
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100%;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text-primary);
+  font-family: var(--font-ui);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+#root {
+  min-height: 100vh;
+  background: var(--bg);
+}

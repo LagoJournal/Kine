@@ -1,0 +1,39 @@
+/* Aqus accent — Kine (violet, hue 295)
+   Constraints: L 0.55-0.72, C 0.12-0.24.
+
+   `:root:root` / `:root[data-theme="dark"]` (specificity 0,2,0) so this override
+   always beats Aqus's own `:root` / `[data-theme="dark"]` token block (0,1,0),
+   regardless of stylesheet load order. Raw --accent-l/c/h set too so chart
+   palette and runtime glows derive from the same violet hue. */
+
+:root:root {
+  --accent-l: 0.58;
+  --accent-c: 0.20;
+  --accent-h: 295;
+
+  --accent:        oklch(0.58 0.20 295);
+  --accent-hover:  oklch(0.52 0.22 295);
+  --accent-light:  oklch(0.92 0.06 295);
+  --accent-mid:    oklch(0.72 0.13 295);
+  --accent-text:   oklch(0.40 0.16 295);
+  --accent-glow:   oklch(0.58 0.20 295 / 0.30);
+  --accent-glass:  oklch(0.58 0.20 295 / 0.12);
+  --focus-ring:    oklch(0.58 0.24 295 / 0.80);
+  --on-accent:     oklch(0.99 0.005 295);
+}
+
+:root[data-theme="dark"] {
+  --accent-l: 0.68;
+  --accent-c: 0.19;
+  --accent-h: 295;
+
+  --accent:        oklch(0.68 0.19 295);
+  --accent-hover:  oklch(0.74 0.17 295);
+  --accent-light:  oklch(0.32 0.07 295);
+  --accent-mid:    oklch(0.44 0.12 295);
+  --accent-text:   oklch(0.85 0.09 295);
+  --accent-glow:   oklch(0.68 0.19 295 / 0.30);
+  --accent-glass:  oklch(0.68 0.19 295 / 0.12);
+  --focus-ring:    oklch(0.68 0.22 295 / 0.75);
+  --on-accent:     oklch(0.16 0.02 295);
+}
