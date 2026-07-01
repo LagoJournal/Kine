@@ -39,3 +39,7 @@ No app change needed — it's a subdomain root, so Vite's default `base: '/'` is
 - **SPA rewrites** — `vercel.json` rewrites all paths to `index.html` so deep links
   (`/guia`, `/pacientes`, `/perfil`) don't 404 on refresh/bookmark.
 - **Lockfile** — `package-lock.json` is committed, so builds are reproducible (`npm ci`).
+- **Skill download** — the Guía "Descargar skill" button serves `public/kine-skill.zip`,
+  regenerated from `skills/kine/` by a `prebuild` step (`scripts/build-skill-zip.mjs`,
+  via `archiver`) on every `npm run build` — so the download always ships the current
+  agent on Vercel. The zip itself is a build artifact and stays gitignored.

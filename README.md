@@ -12,6 +12,12 @@ The skill lives in [`skills/kine/`](skills/kine/).
 > A companion **web dashboard** (Aqus design system) visualizes each patient's history
 > from the synced data. It lives in [`dashboard/`](dashboard/) and deploys to Vercel at
 > **kine.agustinlago.xyz** — see [`docs/deploy-dashboard.md`](docs/deploy-dashboard.md).
+>
+> Kinesiology is the default, but the skill and dashboard **adapt to the professional's
+> own practice** (fonoaudiología, psicomotricidad, neuro-rehab…): the dataset carries its
+> own semantics — the metrics the professional actually uses (`metricas`, may be empty for
+> narrative practices) and an agent-assigned progress read (`estado`) — so nothing ROM/EVA
+> /Daniels is assumed. See [`tests/scenarios/multi-dominio.md`](tests/scenarios/multi-dominio.md).
 
 ## What it does
 

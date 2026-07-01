@@ -28,6 +28,22 @@ history. It's a static Vite + React SPA deployed to Vercel — see `docs/deploy-
 2. `/kine-sync` aggregates those records into a dataset (`kine-data.json`) on Drive, ready
    for the companion dashboard.
 
+## Self-describing dataset (multi-professional)
+The dataset carries its own semantics so the dashboard renders any practice — not just
+kinesiology — through one common pattern:
+- `perfil.patrones.metricas` = `[{etiqueta, escala}]`, the professional's own measurement
+  vocabulary (may be empty for narrative practices). **Never assume ROM/EVA/Daniels.**
+- Each patient carries an agent-assigned progress `estado` (one of six warm keys:
+  `recien-empezando`, `en-camino`, `cada-vez-mejor`, `casi-pleno`, `sin-cambios`,
+  `un-paso-atras`) plus `genero` (for pronoun-correct copy) and `motivo`. The dashboard
+  falls back to a heuristic only when `estado` is absent.
+- Dates may be `YYYY`, `YYYY-MM`, or `YYYY-MM-DD`. Per-session `registros:[{etiqueta,valor}]`
+  are generic and may be empty. Keys must stay spelled identically across `skills/kine/**`
+  and `dashboard/src/data/**`.
+
+The Guía "Descargar skill" button serves `dashboard/public/kine-skill.zip`, auto-regenerated
+from `skills/kine/` by a `prebuild` step on every dashboard build (gitignored artifact).
+
 ## Agent commands
 - **`/kine-sync`** — builds the dataset from the profile and patient histories.
 - **`/kine-aprende`** — re-analyzes the "Modelos de referencia" and proposes rules to
