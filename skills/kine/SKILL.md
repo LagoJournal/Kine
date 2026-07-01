@@ -77,7 +77,7 @@ You're talking to a health professional, not a developer. Keep it human:
 ### A. New report
 1. **Interpret the input.** Accept text, loose notes, or a voice transcript. If it's messy or dictated, apply `extraccion-datos.md`. If you detect more than one patient, go to flow B.
 2. **Validate required fields** per CLAUDE.MD. If any is missing, ask for ONLY what's missing in one concise question. Don't repeat what the user already said. Don't invent data or measurements.
-3. **Find the patient's history.** First read the structured history at `Kine/Panel – datos automáticos/pacientes/{Apellido, Nombre}.json` if it exists; otherwise locate prior reports with `comparacion-progreso.md`. Build the comparisons from that data and number the session. If it's the first session, mark it as an initial evaluation and start the history.
+3. **Find the patient's history.** First read the **highest version** of the structured history at `Kine/Panel – datos automáticos/pacientes/{Apellido, Nombre}.json` (see "Versioned files" — e.g. read `Aragones, Carola.1.json` over `Aragones, Carola.json`) if it exists; otherwise locate prior reports with `comparacion-progreso.md`. Build the comparisons from that data and number the session. If it's the first session, mark it as an initial evaluation and start the history.
 4. **Draft the report** in the chat, following CLAUDE.MD's sections, the format in `estructura-secciones.md`, and the style in `reglas-redaccion.md`. Show it in full.
 5. **Ask for confirmation:** "¿Hago algún cambio o lo genero en PDF?"
 6. **Iterate** if changes are requested: modify only what's flagged and show the new version.
