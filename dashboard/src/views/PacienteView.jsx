@@ -3,7 +3,7 @@ import {
   Section, Container, Stack, Card, Avatar, Badge, Button, Breadcrumb,
   Timeline, Divider, Dialog, EmptyState,
 } from '@agustin/aqus'
-import { pacientes as ALL, initials, shortDate, daysAgo } from '../data.js'
+import { initials, shortDate, daysAgo } from '../data/helpers.js'
 import { EstadoBubble } from '../components/EstadoBubble.jsx'
 
 const heading = { margin: 0, font: 'var(--text-heading-sm)', color: 'var(--text-primary)' }

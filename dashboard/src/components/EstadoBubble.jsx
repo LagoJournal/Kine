@@ -1,6 +1,6 @@
 import React from 'react'
 import { Stack, LiquidBubble } from '@agustin/aqus'
-import { treatmentState } from '../data.js'
+import { treatmentState } from '../data/helpers.js'
 
 /**
  * Organic liquid blob standing in for the patient's current treatment state —

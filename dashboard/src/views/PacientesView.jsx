@@ -3,7 +3,7 @@ import {
   Section, Container, Stack, Card, PageHeader, SearchInput, Avatar, Badge,
   Button, Skeleton, EmptyState, Alert, Dialog, Divider, Select,
 } from '@agustin/aqus'
-import { pacientes as ALL, initials, shortDate, daysAgo, recientes, consultoriosDe } from '../data.js'
+import { initials, shortDate, daysAgo, recientes, consultoriosDe } from '../data/helpers.js'
 import { EstadoBubble } from '../components/EstadoBubble.jsx'
 
 const body = { fontSize: 'var(--text-body-sm)', color: 'var(--text-secondary)' }
