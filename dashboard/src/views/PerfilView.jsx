@@ -3,7 +3,7 @@ import {
   Section, Container, Stack, Card, PageHeader, Avatar, Badge, Tag, Button,
   Input, Textarea, Divider, Alert, Skeleton, DescriptionList, IconButton, Prose,
 } from '@agustin/aqus'
-import { perfil as SEED } from '../data/mock.js'
+import { useData } from '../data/DataContext.jsx'
 
 const heading = { margin: 0, font: 'var(--text-heading-sm)', color: 'var(--text-primary)' }
 const hint = { margin: 0, fontSize: 'var(--text-body-sm)', color: 'var(--text-secondary)' }
@@ -59,16 +59,24 @@ function Chips({ titulo, items, ordered = false }) {
 }
 
 export function PerfilView() {
+  const { perfil, source, status, error, driveConfigured, connect, disconnect } = useData()
   const [loading, setLoading] = React.useState(true)
   const [editing, setEditing] = React.useState(false)
   const [saved, setSaved] = React.useState(false)
-  const [ident, setIdent] = React.useState(SEED.identidad)
-  const [pat, setPat] = React.useState(SEED.patrones)
+  const [ident, setIdent] = React.useState(perfil.identidad)
+  const [pat, setPat] = React.useState(perfil.patrones)
 
   React.useEffect(() => {
     const t = setTimeout(() => setLoading(false), 400)
     return () => clearTimeout(t)
   }, [])
+
+  // Drive connect/disconnect swaps `perfil` under us — resync the local edit
+  // buffers so the form isn't left showing stale (or mock) data.
+  React.useEffect(() => {
+    setIdent(perfil.identidad)
+    setPat(perfil.patrones)
+  }, [perfil])
 
   const setId = (k) => (e) => setIdent((s) => ({ ...s, [k]: e.target.value }))
   const addConsultorio = (v) => setIdent((s) => ({ ...s, consultorios: [...s.consultorios, v] }))
@@ -215,10 +223,38 @@ export function PerfilView() {
             </Stack>
           </Card>
 
-          <Stack direction="row" gap={2} align="center" wrap>
-            <Badge tone="neutral">Última sincronización 1 jul</Badge>
-            <span style={hint}>Los cambios se aplican al guardar.</span>
-          </Stack>
+          <Card>
+            <Stack gap={3}>
+              <Stack direction="row" justify="space-between" align="center" wrap gap={2}>
+                <Stack gap={0}>
+                  <h2 style={heading}>Conexión con Google Drive</h2>
+                  <span style={hint}>
+                    {source === 'drive'
+                      ? 'Mostrando tus datos reales de Drive.'
+                      : 'Mostrando datos de ejemplo. Conectá tu Drive para ver tus pacientes.'}
+                  </span>
+                </Stack>
+                {source === 'drive' ? (
+                  <Button variant="secondary" onClick={disconnect}>Desconectar</Button>
+                ) : (
+                  <Button
+                    variant="primary"
+                    icon={<i className="ph ph-google-logo" />}
+                    onClick={connect}
+                    disabled={!driveConfigured || status === 'loading'}
+                  >
+                    {status === 'loading' ? 'Conectando…' : 'Conectar Google Drive'}
+                  </Button>
+                )}
+              </Stack>
+              {!driveConfigured && (
+                <Alert tone="warning">
+                  Falta configurar <code>VITE_GOOGLE_CLIENT_ID</code>. Ver docs/google-drive-setup.md.
+                </Alert>
+              )}
+              {status === 'error' && error && <Alert tone="danger">{error}</Alert>}
+            </Stack>
+          </Card>
         </Stack>
       </Container>
     </Section>
