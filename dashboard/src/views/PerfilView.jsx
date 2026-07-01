@@ -97,7 +97,13 @@ export function PerfilView() {
   const setId = (k) => (e) => setIdent((s) => ({ ...s, [k]: e.target.value }))
   const addConsultorio = (v) => setIdent((s) => ({ ...s, consultorios: [...(s.consultorios ?? []), v] }))
   const rmConsultorio = (v) => setIdent((s) => ({ ...s, consultorios: (s.consultorios ?? []).filter((x) => x !== v) }))
-  const setUnidad = (k) => (e) => setPat((s) => ({ ...s, unidades: { ...(s.unidades ?? {}), [k]: e.target.value } }))
+  const setMetrica = (i, field) => (e) => setPat((s) => {
+    const metricas = [...(s.metricas ?? [])]
+    metricas[i] = { ...metricas[i], [field]: e.target.value }
+    return { ...s, metricas }
+  })
+  const addMetrica = () => setPat((s) => ({ ...s, metricas: [...(s.metricas ?? []), { etiqueta: '', escala: '' }] }))
+  const rmMetrica = (i) => setPat((s) => ({ ...s, metricas: (s.metricas ?? []).filter((_, j) => j !== i) }))
   const addTo = (k) => (v) => setPat((s) => ({ ...s, [k]: [...(s[k] ?? []), v] }))
   const rmFrom = (k) => (v) => setPat((s) => ({ ...s, [k]: (s[k] ?? []).filter((x) => x !== v) }))
 
@@ -196,12 +202,28 @@ export function PerfilView() {
                   <ChipEditor titulo="Secciones del informe" ayuda="El orden en que aparecen en el PDF."
                     items={pat.seccionesPreferidas ?? []} onAdd={addTo('seccionesPreferidas')} onRemove={rmFrom('seccionesPreferidas')} />
                   <Stack gap={2}>
-                    <span style={label}>Unidades</span>
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 16 }}>
-                      <Input label="Rango de movimiento" value={pat.unidades?.rom ?? ''} onChange={setUnidad('rom')} />
-                      <Input label="Dolor" value={pat.unidades?.dolor ?? ''} onChange={setUnidad('dolor')} />
-                      <Input label="Fuerza" value={pat.unidades?.fuerza ?? ''} onChange={setUnidad('fuerza')} />
-                    </div>
+                    <span style={label}>Cómo mide el progreso</span>
+                    <span style={hint}>Las escalas o conceptos con los que seguís la evolución. Dejalo vacío si trabajás solo con texto.</span>
+                    <Stack gap={2}>
+                      {(pat.metricas ?? []).map((m, i) => (
+                        <Stack key={i} direction="row" gap={2} align="end" wrap>
+                          <div style={{ flex: 1, minWidth: 160 }}>
+                            <Input label="Qué medís" value={m.etiqueta ?? ''} onChange={setMetrica(i, 'etiqueta')} />
+                          </div>
+                          <div style={{ flex: 1, minWidth: 160 }}>
+                            <Input label="Escala / unidad" value={m.escala ?? ''} onChange={setMetrica(i, 'escala')} />
+                          </div>
+                          <IconButton variant="soft" label="Quitar métrica" onClick={() => rmMetrica(i)}>
+                            <i className="ph ph-trash" />
+                          </IconButton>
+                        </Stack>
+                      ))}
+                      <div>
+                        <Button variant="secondary" size="sm" icon={<i className="ph ph-plus" />} onClick={addMetrica}>
+                          Agregar métrica
+                        </Button>
+                      </div>
+                    </Stack>
                   </Stack>
                   <ChipEditor titulo="Reglas de redacción" ayuda="Restricciones que el agente respeta siempre."
                     items={pat.reglas ?? []} onAdd={addTo('reglas')} onRemove={rmFrom('reglas')} />
@@ -234,21 +256,21 @@ export function PerfilView() {
                   </Stack>
 
                   <Stack gap={2}>
-                    <FieldLabel icon="ph-ruler">Unidades</FieldLabel>
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: 12 }}>
-                      {[
-                        { t: 'Rango de movimiento', v: pat.unidades?.rom },
-                        { t: 'Dolor', v: pat.unidades?.dolor },
-                        { t: 'Fuerza', v: pat.unidades?.fuerza },
-                      ].map((u) => (
-                        <div key={u.t} style={{ background: 'var(--surface-raised)', borderRadius: 'var(--radius-md)', padding: 'var(--space-3)' }}>
-                          <Stack gap={1}>
-                            <span style={{ fontSize: 'var(--text-caption)', color: 'var(--text-muted)' }}>{u.t}</span>
-                            <strong style={{ color: 'var(--text-primary)' }}>{u.v || '—'}</strong>
-                          </Stack>
-                        </div>
-                      ))}
-                    </div>
+                    <FieldLabel icon="ph-ruler">Cómo mide el progreso</FieldLabel>
+                    {(pat.metricas ?? []).length > 0 ? (
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: 12 }}>
+                        {pat.metricas.map((u, i) => (
+                          <div key={`${u.etiqueta}-${i}`} style={{ background: 'var(--surface-raised)', borderRadius: 'var(--radius-md)', padding: 'var(--space-3)' }}>
+                            <Stack gap={1}>
+                              <span style={{ fontSize: 'var(--text-caption)', color: 'var(--text-muted)' }}>{u.etiqueta}</span>
+                              <strong style={{ color: 'var(--text-primary)' }}>{u.escala || '—'}</strong>
+                            </Stack>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <span style={hint}>Este perfil describe el progreso en palabras, sin escalas numéricas.</span>
+                    )}
                   </Stack>
 
                   <Stack gap={2}>
