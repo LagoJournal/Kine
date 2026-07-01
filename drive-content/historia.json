@@ -1,0 +1,61 @@
+{
+  "paciente": {
+    "nombre": "María",
+    "apellido": "García",
+    "edad": 35,
+    "dni": "28.456.789",
+    "diagnostico": "Síndrome femoropatelar bilateral, predominio derecho"
+  },
+  "sesiones": [
+    {
+      "fecha": "2026-06-09",
+      "tipo": "Tratamiento",
+      "numeroSesion": "6 de 12",
+      "tratamiento": {
+        "ejercicios": [
+          { "nombre": "Extensión de rodilla en cadena cinética abierta", "series": 3, "reps": 12, "sostenSeg": null, "carga": "2 kg", "rango": "90° a 0°" }
+        ],
+        "elongaciones": [],
+        "tecnicasManuales": [],
+        "agentesFisicos": []
+      },
+      "medidas": {
+        "rom": [ { "movimiento": "Flexión rodilla", "lado": "derecho", "valor": 100, "unidad": "grados" } ],
+        "eva": [ { "situacion": "Subir escaleras", "valor": 6 } ],
+        "fuerza": [ { "musculo": "Cuádriceps", "lado": "derecho", "valor": "3+/5" } ]
+      },
+      "plan": { "corto": [], "largo": [], "indicaciones": [] },
+      "observaciones": "Se registra tolerancia adecuada al ejercicio sin dolor.",
+      "informePdf": "Garcia_2026-06-09_informe_evolucion.pdf"
+    },
+    {
+      "fecha": "2026-06-23",
+      "tipo": "Tratamiento",
+      "numeroSesion": "8 de 12",
+      "tratamiento": {
+        "ejercicios": [
+          { "nombre": "Sentadilla isométrica en pared", "series": 3, "reps": null, "sostenSeg": 30, "carga": null, "rango": "60°" },
+          { "nombre": "Extensión de rodilla en cadena cinética abierta", "series": 3, "reps": 12, "sostenSeg": null, "carga": "2 kg", "rango": "90° a 0°" }
+        ],
+        "elongaciones": [
+          { "musculo": "Isquiotibiales", "tecnica": "estática", "sostenSeg": 30, "lado": "bilateral" }
+        ],
+        "tecnicasManuales": [],
+        "agentesFisicos": [ { "modalidad": "Crioterapia", "zona": "rodillas", "duracionMin": 15 } ]
+      },
+      "medidas": {
+        "rom": [ { "movimiento": "Flexión rodilla", "lado": "derecho", "valor": 115, "unidad": "grados" } ],
+        "eva": [ { "situacion": "Subir escaleras", "valor": 3 } ],
+        "fuerza": [ { "musculo": "Cuádriceps", "lado": "derecho", "valor": "4/5" } ]
+      },
+      "plan": {
+        "corto": ["Lograr flexión de rodilla derecha ≥ 130° en 4 semanas."],
+        "largo": ["Retorno progresivo a la carrera."],
+        "indicaciones": ["2 sesiones semanales.", "Elongación diaria en domicilio."]
+      },
+      "observaciones": "Se observa mejor control motor durante la sentadilla, con mejor alineación rotuliana.",
+      "informePdf": "Garcia_2026-06-23_informe_evolucion.pdf"
+    }
+  ],
+  "actualizadoEl": "2026-06-23"
+}

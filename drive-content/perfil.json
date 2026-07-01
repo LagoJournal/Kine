@@ -1,0 +1,32 @@
+{
+  "identidad": {
+    "nombre": "",
+    "matricula": "",
+    "especialidad": "",
+    "clinica": ""
+  },
+  "patrones": {
+    "estilo": "Voz pasiva en hallazgos clínicos; se refiere al paciente por apellido.",
+    "tratamientosFrecuentes": [],
+    "seccionesPreferidas": [
+      "Encabezado",
+      "Datos del Paciente",
+      "Datos de la Sesión",
+      "Tratamiento Realizado",
+      "Evaluación del Progreso",
+      "Plan de Tratamiento",
+      "Observaciones"
+    ],
+    "unidades": {
+      "rom": "grados",
+      "dolor": "EVA 0-10",
+      "fuerza": "Daniels 0-5"
+    },
+    "reglas": [
+      "Usar terminología anatómica completa (no abreviar nombres de músculos).",
+      "Incluir unidades en toda evaluación.",
+      "Diagnóstico kinesiológico/funcional, nunca médico."
+    ]
+  },
+  "actualizadoEl": "2026-06-30"
+}
