@@ -1,6 +1,10 @@
 const CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID
 const SCOPE = 'https://www.googleapis.com/auth/drive.readonly'
+// Persisted in localStorage so the connection survives closing the tab/app and
+// resumes on reopen (within the token's lifetime; past it, we silently re-auth
+// while a connection flag remains set). Tradeoff: the token lives on the device.
 const STORAGE_KEY = 'kine.driveToken'
+const CONNECTED_KEY = 'kine.driveConnected'
 const SIGNIN_TIMEOUT_MS = 30_000
 // Treat tokens as expired a little early so a Drive call made right after
 // getStoredToken() doesn't land on an already-expired token.
@@ -39,20 +43,20 @@ export function isConfigured() {
 }
 
 export function getStoredToken() {
-  const raw = sessionStorage.getItem(STORAGE_KEY)
+  const raw = localStorage.getItem(STORAGE_KEY)
   if (!raw) return null
 
   let parsed
   try {
     parsed = JSON.parse(raw)
   } catch {
-    sessionStorage.removeItem(STORAGE_KEY)
+    localStorage.removeItem(STORAGE_KEY)
     return null
   }
 
   const { accessToken, expiresAt } = parsed
   if (!accessToken || !expiresAt || Date.now() >= expiresAt - EXPIRY_BUFFER_MS) {
-    sessionStorage.removeItem(STORAGE_KEY)
+    localStorage.removeItem(STORAGE_KEY)
     return null
   }
   return accessToken
@@ -60,11 +64,18 @@ export function getStoredToken() {
 
 function storeToken(accessToken, expiresInSeconds) {
   const expiresAt = Date.now() + expiresInSeconds * 1000
-  sessionStorage.setItem(STORAGE_KEY, JSON.stringify({ accessToken, expiresAt }))
+  localStorage.setItem(STORAGE_KEY, JSON.stringify({ accessToken, expiresAt }))
+  localStorage.setItem(CONNECTED_KEY, '1')
 }
 
 export function clearStoredToken() {
-  sessionStorage.removeItem(STORAGE_KEY)
+  localStorage.removeItem(STORAGE_KEY)
+}
+
+/** Whether the user connected Drive before (survives token expiry), so we can
+ *  try to resume silently on reopen. Cleared only on explicit disconnect. */
+export function wasConnected() {
+  return localStorage.getItem(CONNECTED_KEY) === '1'
 }
 
 /** Opens the Google account picker/consent popup, resolves with an access token. */
@@ -98,10 +109,12 @@ export async function signIn() {
   return Promise.race([tokenPromise, timeout])
 }
 
-/** Best-effort revoke + always clears the local token. */
+/** Best-effort revoke + clears the token and the connection flag (explicit
+ *  disconnect, so we don't try to silently resume next time). */
 export function signOut() {
   const token = getStoredToken()
   clearStoredToken()
+  localStorage.removeItem(CONNECTED_KEY)
   if (token && window.google?.accounts?.oauth2) {
     window.google.accounts.oauth2.revoke(token)
   }

@@ -1,7 +1,7 @@
 import React from 'react'
 import { perfil as mockPerfil, pacientes as mockPacientes } from './mock.js'
 import { normalizeDataset } from './normalize.js'
-import { signIn, signOut, getStoredToken, clearStoredToken, isConfigured } from '../drive/googleAuth.js'
+import { signIn, signOut, getStoredToken, clearStoredToken, isConfigured, wasConnected } from '../drive/googleAuth.js'
 import { fetchKineData, DriveApiError } from '../drive/driveClient.js'
 
 const MOCK_DATASET = { perfil: mockPerfil, pacientes: mockPacientes }
@@ -46,10 +46,18 @@ export function DataProvider({ children }) {
     }
   }, [])
 
-  // Restore a still-valid session on page load/refresh.
+  // Resume the Drive connection on page load / reopen: use a still-valid stored
+  // token, else — if the user connected before — try to re-auth silently
+  // (GIS returns a token without a popup when the Google session + grant exist;
+  // otherwise it fails quietly and we stay on mock, no scary prompt).
   React.useEffect(() => {
     const token = getStoredToken()
-    if (token) loadFromDrive(token, { silent: true })
+    if (token) { loadFromDrive(token, { silent: true }); return }
+    if (isConfigured() && wasConnected()) {
+      signIn()
+        .then((t) => loadFromDrive(t, { silent: true }))
+        .catch(() => { /* couldn't resume silently — stay on mock */ })
+    }
   }, [loadFromDrive])
 
   const connect = React.useCallback(async () => {
