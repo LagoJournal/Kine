@@ -1,9 +1,10 @@
 import React from 'react'
-import { NavBar, IconButton, Tooltip } from '@agustin/aqus'
+import { NavBar, IconButton, Tooltip, Section, Container, Alert, Button } from '@agustin/aqus'
 import { GuiaView } from './views/GuiaView.jsx'
 import { PacientesView } from './views/PacientesView.jsx'
 import { PacienteView } from './views/PacienteView.jsx'
 import { PerfilView } from './views/PerfilView.jsx'
+import { useData } from './data/DataContext.jsx'
 
 const LINKS = [
   { href: '/guia', label: 'Guía' },
@@ -22,6 +23,35 @@ function ThemeToggle({ dark, onToggle }) {
         <i className={dark ? 'ph ph-sun' : 'ph ph-moon'} />
       </IconButton>
     </Tooltip>
+  )
+}
+
+function MockDataBanner() {
+  const { source, status, error, driveConfigured, connect } = useData()
+
+  return (
+    <Section>
+      <Container>
+        {source === 'mock' && (
+          <Alert tone="info" title="Mostrando datos de ejemplo">
+            Conectá tu Google Drive para ver tus pacientes reales.
+            <div style={{ marginTop: 'var(--space-3)' }}>
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={connect}
+                disabled={!driveConfigured || status === 'loading'}
+              >
+                {status === 'loading' ? 'Conectando…' : 'Conectar Google Drive'}
+              </Button>
+            </div>
+          </Alert>
+        )}
+        {status === 'error' && error && (
+          <Alert tone="danger" title="No pude conectar con Drive">{error}</Alert>
+        )}
+      </Container>
+    </Section>
   )
 }
 
@@ -48,6 +78,7 @@ export function App() {
       />
 
       <main>
+        {route !== '/perfil' && <MockDataBanner />}
         {route === '/guia' && <GuiaView />}
         {route === '/pacientes' && pacienteId == null && (
           <PacientesView onOpen={(id) => setPacienteId(id)} />
