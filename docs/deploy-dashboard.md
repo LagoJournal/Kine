@@ -27,6 +27,10 @@ No app change needed — it's a subdomain root, so Vite's default `base: '/'` is
 
 ## Notes
 
+- **Google Drive** — set `VITE_GOOGLE_CLIENT_ID` as a Vercel environment variable
+  (Production + Preview + Development) so signed-in users see their real Drive data.
+  Without it the dashboard still works, showing mock data only. Full setup:
+  [`docs/google-drive-setup.md`](google-drive-setup.md).
 - **Aqus dependency** — `@agustin/aqus` installs from the public GitHub repo
   `LagoJournal/Aqus#v0.2.2`, so Vercel installs it with no extra auth.
 - **Node** — pinned to 22 via [`dashboard/.nvmrc`](../dashboard/.nvmrc).
