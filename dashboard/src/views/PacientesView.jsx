@@ -5,6 +5,7 @@ import {
 } from '@agustin/aqus'
 import { initials, shortDate, daysAgo, recientes, consultoriosDe } from '../data/helpers.js'
 import { EstadoBubble } from '../components/EstadoBubble.jsx'
+import { useData } from '../data/DataContext.jsx'
 
 const body = { fontSize: 'var(--text-body-sm)', color: 'var(--text-secondary)' }
 const label = {
@@ -65,6 +66,7 @@ function PacienteCard({ p, onOpen }) {
 }
 
 export function PacientesView({ onOpen }) {
+  const { pacientes: ALL } = useData()
   const [loading, setLoading] = React.useState(true)
   const [error, setError] = React.useState(false)
   const [q, setQ] = React.useState('')

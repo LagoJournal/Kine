@@ -10,9 +10,12 @@ import '../aqus.css'
 import './base.css'
 
 import { App } from './App.jsx'
+import { DataProvider } from './data/DataContext.jsx'
 
 createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <App />
+    <DataProvider>
+      <App />
+    </DataProvider>
   </React.StrictMode>,
 )

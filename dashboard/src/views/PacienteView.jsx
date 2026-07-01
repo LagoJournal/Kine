@@ -5,6 +5,7 @@ import {
 } from '@agustin/aqus'
 import { initials, shortDate, daysAgo } from '../data/helpers.js'
 import { EstadoBubble } from '../components/EstadoBubble.jsx'
+import { useData } from '../data/DataContext.jsx'
 
 const heading = { margin: 0, font: 'var(--text-heading-sm)', color: 'var(--text-primary)' }
 const body = { fontSize: 'var(--text-body-sm)', color: 'var(--text-secondary)' }
@@ -61,6 +62,7 @@ function SesionContenido({ s }) {
 }
 
 export function PacienteView({ id, onBack }) {
+  const { pacientes: ALL } = useData()
   const [newOpen, setNewOpen] = React.useState(false)
   const p = ALL.find((x) => x.id === id)
 
