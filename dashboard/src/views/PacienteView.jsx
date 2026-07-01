@@ -12,6 +12,8 @@ const label = {
   fontSize: 'var(--text-caption)', color: 'var(--text-muted)',
   textTransform: 'uppercase', letterSpacing: '0.06em',
 }
+// Let long chips wrap their text instead of overflowing the card.
+const chipWrap = { whiteSpace: 'normal', maxWidth: '100%', lineHeight: 1.3, textAlign: 'left' }
 
 const fullName = (p) => [p?.nombre, p?.apellido].filter(Boolean).join(' ') || 'Paciente'
 const reportTitle = (s) => (/inicial|evaluac/i.test(s?.tipo ?? '') ? s.tipo : 'Evolución')
@@ -114,7 +116,7 @@ function SesionContenido({ s }) {
       {Array.isArray(s.registros) && s.registros.length > 0 && (
         <Stack direction="row" gap={2} wrap>
           {s.registros.map((r, i) => (
-            <Badge key={r?.etiqueta ?? i} tone="neutral">{r?.etiqueta}: {r?.valor}</Badge>
+            <Badge key={r?.etiqueta ?? i} tone="neutral" style={chipWrap}>{r?.etiqueta}: {r?.valor}</Badge>
           ))}
         </Stack>
       )}
@@ -127,6 +129,7 @@ function SesionContenido({ s }) {
             borderInlineStart: '2px solid var(--accent)',
             color: 'var(--text-secondary)',
             fontStyle: 'italic',
+            textAlign: 'justify',
           }}
         >
           {s.observaciones}
@@ -204,7 +207,7 @@ export function PacienteView({ id, onBack }) {
               <Stack gap={3}>
                 <span style={label}>En qué está trabajando</span>
                 <Stack direction="row" gap={2} wrap>
-                  {p.foco.map((f) => <Badge key={f} tone="neutral">{f}</Badge>)}
+                  {p.foco.map((f) => <Badge key={f} tone="neutral" style={chipWrap}>{f}</Badge>)}
                 </Stack>
               </Stack>
             </Card>

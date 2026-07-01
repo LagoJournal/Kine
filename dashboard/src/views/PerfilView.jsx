@@ -9,6 +9,8 @@ import { buildPatronesPrompt } from '../data/prompt.js'
 
 const heading = { margin: 0, font: 'var(--text-heading-sm)', color: 'var(--text-primary)' }
 const hint = { margin: 0, fontSize: 'var(--text-body-sm)', color: 'var(--text-secondary)' }
+// Let long chips wrap their text instead of overflowing the card.
+const chipWrap = { whiteSpace: 'normal', maxWidth: '100%', lineHeight: 1.3, textAlign: 'left' }
 const label = {
   fontSize: 'var(--text-caption)', color: 'var(--text-muted)',
   textTransform: 'uppercase', letterSpacing: '0.06em',
@@ -62,7 +64,7 @@ function Chips({ titulo, items, ordered = false }) {
       <span style={label}>{titulo}</span>
       <Stack direction="row" gap={2} wrap>
         {items.map((it, i) => (
-          <Badge key={it} tone="neutral">{ordered ? `${i + 1}. ${it}` : it}</Badge>
+          <Badge key={it} tone="neutral" style={chipWrap}>{ordered ? `${i + 1}. ${it}` : it}</Badge>
         ))}
       </Stack>
     </Stack>
@@ -274,7 +276,7 @@ export function PerfilView() {
                   <Stack gap={2}>
                     <FieldLabel icon="ph-hand-heart">Tratamientos frecuentes</FieldLabel>
                     <Stack direction="row" gap={2} wrap>
-                      {(pat.tratamientosFrecuentes ?? []).map((t) => <Badge key={t} tone="neutral">{t}</Badge>)}
+                      {(pat.tratamientosFrecuentes ?? []).map((t) => <Badge key={t} tone="neutral" style={chipWrap}>{t}</Badge>)}
                       {(pat.tratamientosFrecuentes ?? []).length === 0 && <span style={hint}>Todavía sin definir.</span>}
                     </Stack>
                   </Stack>
@@ -282,7 +284,7 @@ export function PerfilView() {
                   <Stack gap={2}>
                     <FieldLabel icon="ph-list-numbers">Secciones del informe</FieldLabel>
                     <Stack direction="row" gap={2} wrap>
-                      {(pat.seccionesPreferidas ?? []).map((s, i) => <Badge key={s} tone="neutral">{i + 1}. {s}</Badge>)}
+                      {(pat.seccionesPreferidas ?? []).map((s, i) => <Badge key={s} tone="neutral" style={chipWrap}>{i + 1}. {s}</Badge>)}
                     </Stack>
                   </Stack>
 
