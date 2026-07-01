@@ -53,12 +53,17 @@ export function DataProvider({ children }) {
   }, [loadFromDrive])
 
   const connect = React.useCallback(async () => {
+    // Bump the fence before awaiting signIn() too, not just inside
+    // loadFromDrive — otherwise a still-in-flight silent restore could
+    // resolve after signIn() fails here and clobber this error state.
+    const requestId = ++requestIdRef.current
     setStatus('loading')
     setError(null)
     try {
       const token = await signIn()
       await loadFromDrive(token)
     } catch (err) {
+      if (requestId !== requestIdRef.current) return
       setError(err.message)
       setStatus('error')
     }
