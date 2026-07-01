@@ -41,6 +41,7 @@ function MockDataBanner() {
                 size="sm"
                 onClick={connect}
                 disabled={!driveConfigured || status === 'loading'}
+                title={!driveConfigured ? 'Falta configurar VITE_GOOGLE_CLIENT_ID' : undefined}
               >
                 {status === 'loading' ? 'Conectando…' : 'Conectar Google Drive'}
               </Button>
@@ -78,7 +79,10 @@ export function App() {
       />
 
       <main>
-        {route !== '/perfil' && <MockDataBanner />}
+        {/* Hidden while viewing one patient's record — connecting there would
+            swap datasets under the reader and silently kick them to an empty
+            state, since mock and Drive patient IDs don't overlap. */}
+        {route !== '/perfil' && !(route === '/pacientes' && pacienteId != null) && <MockDataBanner />}
         {route === '/guia' && <GuiaView />}
         {route === '/pacientes' && pacienteId == null && (
           <PacientesView onOpen={(id) => setPacienteId(id)} />
