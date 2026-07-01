@@ -28,6 +28,18 @@ describe('pickLatestKineData', () => {
     expect(pickLatestKineData(files).id).toBe('y')
   })
 
+  it("handles Google's duplicate naming and other version forms", () => {
+    expect(pickLatestKineData([
+      { id: 'a', name: 'kine-data.json', modifiedTime: '2026-06-01' },
+      { id: 'b', name: 'kine-data (1).json', modifiedTime: '2026-01-01' },
+    ]).id).toBe('b')
+    expect(pickLatestKineData([
+      { id: 'a', name: 'kine-data.json', modifiedTime: '2026-06-01' },
+      { id: 'b', name: 'kine-data.v2.json', modifiedTime: '2026-01-01' },
+      { id: 'c', name: 'kine-data-3.json', modifiedTime: '2026-01-01' },
+    ]).id).toBe('c')
+  })
+
   it('tiebreaks equal versions by newest modifiedTime', () => {
     const files = [
       { id: 'old', name: 'kine-data.json', modifiedTime: '2026-01-01' },

@@ -26,9 +26,17 @@ async function driveFetchJson(url, token) {
 }
 
 // Kine writes append-only, versioned files (the connector can't update/delete):
-// kine-data.json, then kine-data.1.json, kine-data.2.json… The dashboard always
-// reads the highest iteration; a plain (unnumbered) file counts as the lowest.
-const KINE_DATA_RE = /^kine-data(?:\.(\d+))?\.json$/i
+// kine-data.json, then kine-data.1.json, kine-data.2.json… We also tolerate the
+// other iteration forms that show up in practice — Google's own duplicate naming
+// "kine-data (1).json", or "kine-data.v1.json", "kine-data-1.json". Any file that
+// starts with kine-data and ends in .json is a candidate; the version is the last
+// integer between the two (none → 0, the plain file). Highest version wins.
+const KINE_DATA_RE = /^kine-data(.*)\.json$/i
+
+const versionOf = (middle) => {
+  const nums = String(middle).match(/\d+/g)
+  return nums ? Number(nums[nums.length - 1]) : 0
+}
 
 /** From a list of Drive files, pick the highest-versioned kine-data file
  *  (tiebreak: newest modifiedTime). Returns the file or null. Pure. */
@@ -39,7 +47,7 @@ export function pickLatestKineData(files) {
   for (const f of files ?? []) {
     const m = String(f?.name ?? '').match(KINE_DATA_RE)
     if (!m) continue
-    const v = m[1] ? Number(m[1]) : 0
+    const v = versionOf(m[1])
     const t = String(f?.modifiedTime ?? '')
     if (v > bestV || (v === bestV && t > bestT)) {
       best = f
