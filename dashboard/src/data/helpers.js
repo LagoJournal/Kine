@@ -170,12 +170,18 @@ const deriveProgressKey = (sesiones, cantidad) => {
   return n <= 2 ? 'recien-empezando' : 'en-camino'
 }
 
-/** Returns { key, label, note, icon, color, tone } for a patient. */
+const VALID_ESTADOS = new Set(Object.keys(PROGRESS_VARIANTS))
+
+/** Returns { key, label, note, icon, color, tone } for a patient.
+ *  Prefers an agent-assigned `estado`; falls back to the pain-trend heuristic. */
 export const progressState = (paciente) => {
-  const sesiones = Array.isArray(paciente?.sesiones) ? paciente.sesiones : []
-  const key = deriveProgressKey(sesiones, paciente?.cantidadSesiones)
+  const explicit = paciente?.estado
+  const key = (typeof explicit === 'string' && VALID_ESTADOS.has(explicit))
+    ? explicit
+    : deriveProgressKey(Array.isArray(paciente?.sesiones) ? paciente.sesiones : [], paciente?.cantidadSesiones)
   const base = PROGRESS_VARIANTS[key]
-  const note = GENDERED_NOTE[key] ? GENDERED_NOTE[key](paciente?.genero) : base.note
+  const note = paciente?.estadoNota
+    ?? (GENDERED_NOTE[key] ? GENDERED_NOTE[key](paciente?.genero) : base.note)
   return { key, ...base, note }
 }
 

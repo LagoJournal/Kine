@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { shortDate, longDate, daysAgo } from './helpers.js'
+import { shortDate, longDate, daysAgo, progressState } from './helpers.js'
 
 describe('date helpers accept variable granularity', () => {
   it('shortDate formats full / month / year / invalid', () => {
@@ -28,5 +28,29 @@ describe('date helpers accept variable granularity', () => {
     expect(daysAgo('2025', '2026-07-15')).toBe('hace 1 año')
     expect(daysAgo('2026', '2026-07-15')).toBe('este año')
     expect(daysAgo('', '2026-07-15')).toBe(null)
+  })
+})
+
+describe('progressState honors an explicit estado', () => {
+  it('uses a valid explicit estado over the heuristic', () => {
+    const p = { estado: 'casi-pleno', sesiones: [] }
+    expect(progressState(p).key).toBe('casi-pleno')
+    expect(progressState(p).label).toBe('Casi pleno')
+  })
+
+  it('estadoNota overrides the default note', () => {
+    const p = { estado: 'en-camino', estadoNota: 'Nota a medida.', sesiones: [] }
+    expect(progressState(p).note).toBe('Nota a medida.')
+  })
+
+  it('falls back to the heuristic when estado is missing or unknown', () => {
+    expect(progressState({ estado: 'no-existe', sesiones: [] }).key).toBe('recien-empezando')
+    expect(progressState({ sesiones: [] }).key).toBe('recien-empezando')
+  })
+
+  it('un-paso-atras note agrees with gender via fallback', () => {
+    expect(progressState({ estado: 'un-paso-atras', genero: 'masculino' }).note).toBe('Un traspié; lo vamos a acompañar.')
+    expect(progressState({ estado: 'un-paso-atras', genero: 'femenino' }).note).toBe('Un traspié; la vamos a acompañar.')
+    expect(progressState({ estado: 'un-paso-atras' }).note).toBe('Un traspié; lo seguimos de cerca.')
   })
 })
