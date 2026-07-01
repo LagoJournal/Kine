@@ -86,9 +86,15 @@ export function App() {
     document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light')
   }, [dark])
 
+  // Every view change starts at the top (incl. opening a patient / back-forward).
+  React.useEffect(() => {
+    window.scrollTo({ top: 0, left: 0 })
+  }, [route, pacienteId])
+
   // Sync view state with browser history: seed the current entry, then let
   // back/forward restore prior views via popstate.
   React.useEffect(() => {
+    if ('scrollRestoration' in window.history) window.history.scrollRestoration = 'manual'
     window.history.replaceState(
       { route: first.route, pacienteId: first.pacienteId },
       '',
