@@ -20,33 +20,59 @@ const MONTHS_LONG = [
   'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre',
 ]
 
-/** '2026-06-23' → '23 jun'. Returns null on missing/malformed input. */
+// 'YYYY' | 'YYYY-MM' | 'YYYY-MM-DD' → { y, m, d } (m and/or d may be null).
+const parseParts = (iso) => {
+  if (typeof iso !== 'string') return null
+  const m = iso.trim().match(/^(\d{4})(?:-(\d{1,2}))?(?:-(\d{1,2}))?$/)
+  if (!m) return null
+  const mm = m[2] ? Number(m[2]) : null
+  const dd = m[3] ? Number(m[3]) : null
+  if (mm != null && (mm < 1 || mm > 12)) return null
+  return { y: Number(m[1]), m: mm, d: dd }
+}
+
+/** Short form: '23 jun' | 'ene 2026' | '2026'. null on missing/malformed. */
 export const shortDate = (iso) => {
-  if (typeof iso !== 'string') return null
-  const [, m, d] = iso.split('-').map(Number)
-  if (!m || !d) return null
-  return `${d} ${MONTHS[m - 1]}`
+  const p = parseParts(iso)
+  if (!p) return null
+  if (p.d) return `${p.d} ${MONTHS[p.m - 1]}`
+  if (p.m) return `${MONTHS[p.m - 1]} ${p.y}`
+  return `${p.y}`
 }
 
-/** '2026-06-09' → '9 de junio'. Returns null on missing/malformed input. */
+/** Long form: '9 de junio' | 'enero de 2026' | '2026'. null on missing/malformed. */
 export const longDate = (iso) => {
-  if (typeof iso !== 'string') return null
-  const [, m, d] = iso.split('-').map(Number)
-  if (!m || !d) return null
-  return `${d} de ${MONTHS_LONG[m - 1]}`
+  const p = parseParts(iso)
+  if (!p) return null
+  if (p.d) return `${p.d} de ${MONTHS_LONG[p.m - 1]}`
+  if (p.m) return `${MONTHS_LONG[p.m - 1]} de ${p.y}`
+  return `${p.y}`
 }
 
-/** Whole days between two ISO dates, relative to today (2026-07-01 in this dataset). */
+/** Relative label whose granularity matches the input's. null on malformed. */
 export const daysAgo = (iso, today = '2026-07-01') => {
-  if (typeof iso !== 'string') return null
-  const ms = new Date(today) - new Date(iso)
-  if (Number.isNaN(ms)) return null
-  const d = Math.round(ms / 86_400_000)
-  if (d <= 0) return 'hoy'
-  if (d === 1) return 'ayer'
-  if (d < 7) return `hace ${d} días`
-  const w = Math.round(d / 7)
-  return w === 1 ? 'hace 1 semana' : `hace ${w} semanas`
+  const p = parseParts(iso)
+  const now = parseParts(today)
+  if (!p || !now) return null
+
+  if (p.d) {
+    const ms = new Date(today) - new Date(iso)
+    if (Number.isNaN(ms)) return null
+    const d = Math.round(ms / 86_400_000)
+    if (d <= 0) return 'hoy'
+    if (d === 1) return 'ayer'
+    if (d < 7) return `hace ${d} días`
+    const w = Math.round(d / 7)
+    return w === 1 ? 'hace 1 semana' : `hace ${w} semanas`
+  }
+  if (p.m) {
+    const months = (now.y - p.y) * 12 + ((now.m ?? 1) - p.m)
+    if (months <= 0) return 'este mes'
+    return months === 1 ? 'hace 1 mes' : `hace ${months} meses`
+  }
+  const years = now.y - p.y
+  if (years <= 0) return 'este año'
+  return years === 1 ? 'hace 1 año' : `hace ${years} años`
 }
 
 /** Pull the leading number out of a value like '115°' or '3/10'. */
