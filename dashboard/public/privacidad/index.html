@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Política de Privacidad — Kine</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <style>
+      :root { color-scheme: light; }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        background: #f6f1e9;
+        color: #2a2622;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
+      }
+      main { max-width: 720px; margin: 0 auto; padding: 48px 24px 96px; }
+      h1 { font-size: 1.9rem; margin: 0 0 4px; letter-spacing: -0.01em; }
+      h2 { font-size: 1.15rem; margin: 32px 0 8px; }
+      a { color: #6d3bd8; }
+      .eyebrow { text-transform: uppercase; letter-spacing: 0.08em; font-size: 0.75rem; color: #8a8178; margin: 0 0 20px; }
+      .muted { color: #6c655d; }
+      .card { background: #efe8dc; border-radius: 14px; padding: 16px 20px; margin: 20px 0; }
+      code { background: #efe8dc; padding: 1px 6px; border-radius: 6px; font-size: 0.9em; }
+      footer { margin-top: 48px; font-size: 0.85rem; color: #8a8178; }
+      ul { padding-left: 1.2em; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <p class="eyebrow">Kine</p>
+      <h1>Política de Privacidad</h1>
+      <p class="muted">Vigente desde el 1 de julio de 2026.</p>
+
+      <p>
+        Kine es un panel web que ayuda a profesionales de la salud (kinesiología,
+        fonoaudiología y prácticas afines) a visualizar el historial de sus pacientes a
+        partir de informes que ellos mismos generan y guardan en su propio Google Drive.
+        Esta política explica qué datos usa la aplicación y cómo los trata.
+      </p>
+
+      <h2>Qué datos accedemos</h2>
+      <p>
+        Con tu autorización mediante Google (OAuth), la aplicación solicita acceso de
+        <strong>solo lectura</strong> a tu Google Drive
+        (<code>drive.readonly</code>), con un único fin: localizar y leer el archivo
+        <code>kine-data.json</code> que el asistente de Kine genera en tu Drive, para
+        mostrarte tu panel de pacientes.
+      </p>
+
+      <h2>Cómo usamos y almacenamos tus datos</h2>
+      <ul>
+        <li>La aplicación es un sitio <strong>estático, sin servidor propio</strong>. No
+          tenemos backend ni base de datos: no recibimos, guardamos ni copiamos tus datos
+          ni los de tus pacientes en ningún servidor.</li>
+        <li>El contenido de tu Drive se lee y se muestra <strong>únicamente en tu
+          navegador</strong>, durante tu sesión.</li>
+        <li>El token de acceso de Google se guarda de forma temporal en el
+          <code>sessionStorage</code> de tu navegador y se elimina al cerrar la pestaña o
+          al desconectarte.</li>
+        <li>Tus informes y datos de pacientes <strong>viven en tu Google Drive</strong>;
+          Kine solo los muestra.</li>
+      </ul>
+
+      <h2>Con quién compartimos tus datos</h2>
+      <p>
+        Con nadie. No vendemos, alquilamos ni transferimos tu información ni la de tus
+        pacientes. El único tercero involucrado es <strong>Google</strong>, para la
+        autenticación y la lectura de tu Drive.
+      </p>
+
+      <h2>Uso limitado (Google API Services)</h2>
+      <p>
+        El uso que Kine hace de la información recibida de las APIs de Google se ajusta a la
+        <a href="https://developers.google.com/terms/api-services-user-data-policy" target="_blank" rel="noopener">Política de Datos de Usuario de los Servicios de API de Google</a>,
+        incluidos los requisitos de <strong>Uso Limitado</strong> (Limited Use). No usamos
+        los datos de Google para publicidad y no los transferimos a terceros salvo lo
+        estrictamente necesario para brindar la funcionalidad, cumplir la ley o por
+        seguridad.
+      </p>
+
+      <h2>Seguridad y retención</h2>
+      <p>
+        Como no almacenamos datos, no hay retención del lado del servidor. La comunicación
+        con Google se realiza sobre HTTPS. Podés revocar el acceso de Kine en cualquier
+        momento desde la
+        <a href="https://myaccount.google.com/permissions" target="_blank" rel="noopener">configuración de permisos de tu cuenta de Google</a>.
+      </p>
+
+      <h2>Cambios</h2>
+      <p>
+        Si actualizamos esta política, cambiaremos la fecha de vigencia en esta misma
+        página.
+      </p>
+
+      <h2>Contacto</h2>
+      <p>
+        Por consultas sobre privacidad: <a href="mailto:lagoagustindev@gmail.com">lagoagustindev@gmail.com</a>.
+      </p>
+
+      <footer>
+        <p>Kine · <a href="/">kine.agustinlago.xyz</a> · <a href="/terminos">Condiciones del Servicio</a></p>
+      </footer>
+    </main>
+  </body>
+</html>
