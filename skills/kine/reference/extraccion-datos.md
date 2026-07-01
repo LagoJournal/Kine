@@ -5,6 +5,21 @@ spelled-out numbers, abbreviations, and transcription errors. Your job is to ext
 structured data without inventing anything. The examples are Spanish because that's how
 the user speaks.
 
+## Extract through the professional's specialization
+The schema below is kinesiology-flavored, but the practice may be another discipline. Read
+what *this* professional actually records and extract on their terms — don't force a
+kinesiology lens:
+- **Kinesiología / fisioterapia:** ROM, fuerza (Daniels), dolor (EVA), ejercicio terapéutico,
+  agentes físicos.
+- **Fonoaudiología:** narrative evolution — voz, deglución, coordinación fono-respiratoria,
+  TVSO, orientación; usually **no numeric scales** (`registros` empty).
+- **Psicomotricidad / neuro-rehabilitación:** control postural, tono, marcha, autonomía,
+  ánimo/conducta — often qualitative markers, sometimes the professional's own scales.
+When a discipline doesn't use a field below, leave it empty. What matters is the generic
+`registros` (etiqueta/valor, in the professional's own labels) and the narrative
+`observaciones` — those carry any specialization. Let CLAUDE.MD / `perfil.patrones.metricas`
+tell you which measurements this professional keeps.
+
 ## Extraction schema
 Map what you understand to these fields (leave empty what isn't there; don't over-fill):
 - **paciente:** nombre, apellido, edad, DNI, diagnóstico

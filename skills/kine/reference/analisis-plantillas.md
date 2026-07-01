@@ -86,9 +86,16 @@ Fill it with what you extracted. Where there isn't enough signal, use the skill 
 
 ## Save the patterns to perfil.json
 
-The same structured patterns feed the profile memory that the web dashboard lets the user
-see and edit. In addition to CLAUDE.MD, update `Kine/Panel – datos automáticos/perfil.json`
-(the `patrones` block, see `datos-estructurados.md`):
+The same structured patterns feed the profile memory that the panel lets the user see and
+edit. In addition to CLAUDE.MD, write the next version of `Kine/Panel – datos automáticos/perfil.json`
+(see `datos-estructurados.md` → "Versioned files").
+
+The **`identidad`** block — `nombre`, `matricula`, `especialidad`, `clinica` — is often not
+fully in the reports. Ask the professional for whatever's missing (full name, matrícula,
+especialización o enfoque profesional, nombre del consultorio) rather than leaving it blank
+or guessing.
+
+The **`patrones`** block:
 
 - `estilo` — passive/active voice, how the patient is referred to.
 - `tratamientosFrecuentes` — treatments that appear often in their reports.

@@ -18,8 +18,12 @@ This way the dashboard adapts to any practice without being defined by a fixed s
 4. **Flatten** each history to the schema below: turn the treatment into a line (`trabajo`),
    the measurements into generic `registros` (etiqueta/valor, as they were recorded), and
    carry the observations as-is (`observaciones`). The patient's current plan goes in `foco`.
-5. Write `kine-data.json` to `Kine/Panel – datos automáticos/` (replace the previous one).
-6. Confirm in one line: how many patients and sessions were synced, and the date.
+5. Write the panel dataset **append-only and versioned** into `Kine/Panel – datos automáticos/`:
+   the connector can't overwrite, so write the **next** iteration — `kine-data.json`, then
+   `kine-data.1.json`, `kine-data.2.json`… (find the highest existing one and add 1). Never
+   delete the old ones. The panel automatically reads the highest version.
+6. Confirm in one line, in plain language (no filenames): how many patients and sessions the
+   panel now shows, and the date.
 
 ## Schema — `kine-data.json`
 ```json
@@ -60,7 +64,8 @@ This way the dashboard adapts to any practice without being defined by a fixed s
             { "etiqueta": "Dolor al subir escaleras", "valor": "3/10" }
           ],
           "observaciones": "How they progressed, in your words. The most important part of the dashboard.",
-          "informePdf": "Garcia_2026-06-23_informe_evolucion.pdf"
+          "informePdf": "Garcia_2026-06-23_informe_evolucion.pdf",
+          "informeUrl": "https://drive.google.com/file/d/…/view"
         }
       ]
     }
@@ -80,6 +85,9 @@ Notes:
   source. `desde` is the first recorded session; the dashboard uses it for a continuity line
   ("En seguimiento desde el …"), not as a metric.
 - `foco` = the current plan (from the last session that has a plan).
+- `informePdf` = the report's file name; `informeUrl` = that file's Drive link
+  (`webViewLink`), so the panel can open the report in a new tab. Include both when the
+  report exists on Drive.
 - `registros` = **generic**: any value the kinesiologist recorded, as an etiqueta/valor pair
   with the unit included in `valor` (e.g. `"115°"`, `"3/10"`, `"4/5"`). There are no fixed
   types (don't assume ROM/EVA/strength); put what's there, as it is. May be empty.

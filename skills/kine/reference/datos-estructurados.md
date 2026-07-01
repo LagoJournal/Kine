@@ -66,7 +66,8 @@ When deciding format, sections, or style, respect this order:
       "trabajo": "One line of what was worked on, in the professional's words",
       "registros": [ { "etiqueta": "Flexión de rodilla", "valor": "115°" } ],
       "observaciones": "How they progressed, in words. In narrative domains this is the main content.",
-      "informePdf": "..."
+      "informePdf": "...",
+      "informeUrl": "https://drive.google.com/file/d/…/view"
     }
   ]
 }
@@ -84,11 +85,18 @@ When deciding format, sections, or style, respect this order:
 Store only what you have: leave `null` or empty lists where there's no data. **Don't invent**
 values to fill the schema.
 
+## Versioned, append-only files
+The Drive connector can't reliably update or delete, so these files are **append-only and
+versioned**: never overwrite. Write the next iteration with a numeric suffix before the
+extension — `perfil.json` → `perfil.1.json` → `perfil.2.json`…; `García, María.json` →
+`García, María.1.json` → … **Reading**: always use the **highest** iteration of a name;
+ignore the older ones. (Full rule in `SKILL.md` → "Versioned files".)
+
 ## How to update the history (flow A, step 8)
-1. Read the patient's file if it exists; if not, start a new one with `paciente` + `sesiones: []`.
-2. Append the current session to the end of `sesiones` (don't replace the previous ones).
+1. Read the **highest version** of the patient's file if it exists; if not, start a new one with `paciente` + `sesiones: []`.
+2. Append the current session to the end of `sesiones` (carry over the previous ones), including `informePdf` and `informeUrl` (the report's Drive link).
 3. Update the `paciente` fields if the report adds or corrects any (e.g. `genero`, `motivo`, `diagnostico`).
-4. Write the file to `Kine/Panel – datos automáticos/pacientes/`.
+4. Write it as the **next version** in `Kine/Panel – datos automáticos/pacientes/` (append-only — don't overwrite the previous file).
 5. If you can't write to Drive, say so in one line; the PDF report is still delivered.
 
 ## Reconstruction from PDFs

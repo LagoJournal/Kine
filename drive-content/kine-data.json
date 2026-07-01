@@ -54,7 +54,8 @@
             { "etiqueta": "Dolor al subir escaleras", "valor": "3/10" }
           ],
           "observaciones": "Llega con mejor ánimo. Controla mejor la rodilla al hacer la sentadilla y cuenta que ya baja las escaleras sin pensarlo. Sigue molestando un poco al final del día.",
-          "informePdf": "Garcia_2026-06-23_informe_evolucion.pdf"
+          "informePdf": "Garcia_2026-06-23_informe_evolucion.pdf",
+          "informeUrl": "https://drive.google.com/file/d/EJEMPLO/view"
         },
         {
           "fecha": "2026-06-09",
