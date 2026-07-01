@@ -1,7 +1,7 @@
 import React from 'react'
 import {
   Section, Container, Stack, Card, PageHeader, SearchInput, Avatar,
-  Button, Skeleton, EmptyState, Dialog, Divider, SegmentedControl, LiquidBubble,
+  Button, Skeleton, EmptyState, Divider, SegmentedControl, LiquidBubble,
 } from '@agustin/aqus'
 import { initials, shortDate, daysAgo } from '../data/helpers.js'
 import { EstadoBubble } from '../components/EstadoBubble.jsx'
@@ -75,12 +75,11 @@ function grouped(lista, mode, consultoriosOrden) {
   return keys.map((k) => ({ key: k, items: map.get(k) }))
 }
 
-export function PacientesView({ onOpen }) {
+export function PacientesView({ onOpen, onNuevaSesion }) {
   const { pacientes: ALL, perfil } = useData()
   const [loading, setLoading] = React.useState(true)
   const [q, setQ] = React.useState('')
   const [mode, setMode] = React.useState('persona') // 'persona' | 'consultorio'
-  const [newOpen, setNewOpen] = React.useState(false)
 
   React.useEffect(() => {
     const t = setTimeout(() => setLoading(false), 500)
@@ -106,11 +105,6 @@ export function PacientesView({ onOpen }) {
           <PageHeader
             title="Pacientes"
             subtitle="El recorrido de cada persona que acompañás."
-            action={
-              <Button variant="primary" icon={<i className="ph ph-plus" />} onClick={() => setNewOpen(true)}>
-                Nueva sesión
-              </Button>
-            }
           />
 
           {loading && (
@@ -127,7 +121,7 @@ export function PacientesView({ onOpen }) {
               icon={<i className="ph ph-users-three" />}
               title="Todavía no hay pacientes"
               description="Contale una sesión a Kine y su ficha aparece acá."
-              action={<Button variant="primary" onClick={() => setNewOpen(true)}>Nueva sesión</Button>}
+              action={<Button variant="primary" onClick={onNuevaSesion}>Nueva sesión</Button>}
             />
           )}
 
@@ -179,27 +173,6 @@ export function PacientesView({ onOpen }) {
           )}
         </Stack>
       </Container>
-
-      <Dialog
-        open={newOpen}
-        onClose={() => setNewOpen(false)}
-        title="Registrar una sesión"
-        actions={
-          <>
-            <Button variant="ghost" onClick={() => setNewOpen(false)}>Cerrar</Button>
-            <Button
-              variant="primary"
-              icon={<i className="ph ph-arrow-square-out" />}
-              onClick={() => window.open('https://claude.ai', '_blank', 'noopener')}
-            >
-              Abrir Claude
-            </Button>
-          </>
-        }
-      >
-        Las sesiones se cargan contándoselas a Kine en Claude. Redacta el informe, arma el
-        PDF y actualiza la ficha. El panel se pone al día en la próxima sincronización.
-      </Dialog>
     </Section>
   )
 }

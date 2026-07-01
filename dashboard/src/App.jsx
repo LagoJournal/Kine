@@ -1,5 +1,5 @@
 import React from 'react'
-import { NavBar, IconButton, Tooltip, Banner, Button } from '@agustin/aqus'
+import { NavBar, IconButton, Tooltip, Banner, Button, Dialog, Stack } from '@agustin/aqus'
 import { GuiaView } from './views/GuiaView.jsx'
 import { PacientesView } from './views/PacientesView.jsx'
 import { PacienteView } from './views/PacienteView.jsx'
@@ -37,11 +37,12 @@ function MockBanner({ dismissed, onDismiss }) {
   }
   if (source !== 'mock' || dismissed) return null
 
+  // Button lives in the message body (not the inline action slot) so it stacks
+  // below the text — reads cleanly when the bar wraps on a phone.
   return (
-    <Banner
-      tone="accent"
-      onClose={onDismiss}
-      action={
+    <Banner tone="accent" onClose={onDismiss}>
+      <Stack gap={2} align="start">
+        <span>Estás viendo datos de ejemplo. Conectá tu Google Drive para ver tus pacientes reales.</span>
         <Button
           variant="secondary"
           size="sm"
@@ -51,9 +52,7 @@ function MockBanner({ dismissed, onDismiss }) {
         >
           {status === 'loading' ? 'Conectando…' : 'Conectar Google Drive'}
         </Button>
-      }
-    >
-      Estás viendo datos de ejemplo. Conectá tu Google Drive para ver tus pacientes reales.
+      </Stack>
     </Banner>
   )
 }
@@ -63,12 +62,14 @@ export function App() {
   const [pacienteId, setPacienteId] = React.useState(null)
   const [dark, setDark] = React.useState(false)
   const [bannerDismissed, setBannerDismissed] = React.useState(false)
+  const [nuevaOpen, setNuevaOpen] = React.useState(false)
 
   React.useEffect(() => {
     document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light')
   }, [dark])
 
   const go = (href) => { setPacienteId(null); setRoute(href) }
+  const nuevaSesion = () => setNuevaOpen(true)
 
   // Hide the banner on Tu voz (it owns the full connect control) and while
   // reading one patient's record (connecting there would swap the dataset).
@@ -82,7 +83,14 @@ export function App() {
         activeHref={route}
         onLinkClick={(l) => go(l.href)}
         onBrandClick={() => go('/pacientes')}
-        action={<ThemeToggle dark={dark} onToggle={setDark} />}
+        action={
+          <Stack direction="row" gap={2} align="center">
+            <Button variant="primary" size="sm" icon={<i className="ph ph-plus" />} onClick={nuevaSesion}>
+              Nueva sesión
+            </Button>
+            <ThemeToggle dark={dark} onToggle={setDark} />
+          </Stack>
+        }
       />
 
       {showBanner && <MockBanner dismissed={bannerDismissed} onDismiss={() => setBannerDismissed(true)} />}
@@ -90,13 +98,34 @@ export function App() {
       <main>
         {route === '/guia' && <GuiaView />}
         {route === '/pacientes' && pacienteId == null && (
-          <PacientesView onOpen={(id) => setPacienteId(id)} />
+          <PacientesView onOpen={(id) => setPacienteId(id)} onNuevaSesion={nuevaSesion} />
         )}
         {route === '/pacientes' && pacienteId != null && (
           <PacienteView id={pacienteId} onBack={() => setPacienteId(null)} />
         )}
         {route === '/perfil' && <PerfilView />}
       </main>
+
+      <Dialog
+        open={nuevaOpen}
+        onClose={() => setNuevaOpen(false)}
+        title="Registrar una sesión"
+        actions={
+          <>
+            <Button variant="ghost" onClick={() => setNuevaOpen(false)}>Cerrar</Button>
+            <Button
+              variant="primary"
+              icon={<i className="ph ph-arrow-square-out" />}
+              onClick={() => window.open('https://claude.ai', '_blank', 'noopener')}
+            >
+              Abrir Claude
+            </Button>
+          </>
+        }
+      >
+        Las sesiones se cargan contándoselas a Kine en Claude. Redacta el informe, arma el
+        PDF y actualiza la ficha. El panel se pone al día en la próxima sincronización.
+      </Dialog>
     </>
   )
 }

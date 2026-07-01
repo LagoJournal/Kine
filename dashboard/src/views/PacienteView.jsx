@@ -1,7 +1,7 @@
 import React from 'react'
 import {
   Section, Container, Stack, Card, Avatar, Badge, Button, Breadcrumb,
-  Timeline, Divider, Dialog, EmptyState, LiquidBubble,
+  Timeline, Divider, EmptyState, LiquidBubble,
 } from '@agustin/aqus'
 import { initials, shortDate, longDate, daysAgo, parseMetric, progressState, gendered } from '../data/helpers.js'
 import { useData } from '../data/DataContext.jsx'
@@ -138,7 +138,6 @@ function SesionContenido({ s }) {
 
 export function PacienteView({ id, onBack }) {
   const { pacientes: ALL } = useData()
-  const [newOpen, setNewOpen] = React.useState(false)
   const p = (ALL ?? []).find((x) => x?.id === id)
 
   if (!p) {
@@ -188,9 +187,6 @@ export function PacienteView({ id, onBack }) {
               <strong style={{ font: 'var(--text-heading)', color: 'var(--text-primary)' }}>{fullName(p)}</strong>
               {identMeta && <span style={body}>{identMeta}</span>}
             </Stack>
-            <Button variant="primary" icon={<i className="ph ph-plus" />} onClick={() => setNewOpen(true)}>
-              Nueva sesión
-            </Button>
           </Stack>
 
           {/* How they're coming along + why + today's numbers */}
@@ -262,27 +258,6 @@ export function PacienteView({ id, onBack }) {
           )}
         </Stack>
       </Container>
-
-      <Dialog
-        open={newOpen}
-        onClose={() => setNewOpen(false)}
-        title="Registrar una sesión"
-        actions={
-          <>
-            <Button variant="ghost" onClick={() => setNewOpen(false)}>Cerrar</Button>
-            <Button
-              variant="primary"
-              icon={<i className="ph ph-arrow-square-out" />}
-              onClick={() => window.open('https://claude.ai', '_blank', 'noopener')}
-            >
-              Abrir Claude
-            </Button>
-          </>
-        }
-      >
-        Contale a Kine cómo fue la sesión de {p.nombre || 'tu paciente'}. Redacta el informe, arma el PDF y
-        actualiza esta ficha en la próxima sincronización.
-      </Dialog>
     </Section>
   )
 }
