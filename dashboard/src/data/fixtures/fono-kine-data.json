@@ -1,0 +1,109 @@
+{
+  "_comment": "SYNTHETIC test fixture — fabricated fonoaudiología dataset. No real patient. Exercises a non-kinesiology profile: no ROM/EVA/Daniels, narrative-only sessions, YYYY-MM dates, a semestral variant, and a mixed-date note. Not real clinical data.",
+  "perfil": {
+    "identidad": {
+      "nombre": null,
+      "matricula": null,
+      "especialidad": "Fonoaudiología (perfil de ejemplo, no reemplaza el enfoque kinesiológico base de la skill)",
+      "clinica": null
+    },
+    "patrones": {
+      "estilo": "voz pasiva/impersonal en hallazgos clínicos (se observa, se registra, se continúa trabajando); paciente por nombre de pila en el cuerpo, por apellido completo en el bloque de datos",
+      "tratamientosFrecuentes": [
+        "Ejercicios de control de tronco",
+        "Fortalecimiento de musculatura cervical y cintura escapular",
+        "Ejercicios fonatorios / fortalecimiento de cuerdas vocales",
+        "Coordinación fono-respiratoria",
+        "Ejercicios de optimización de la deglución",
+        "Tracto Vocal Semiocluido (TVSO)"
+      ],
+      "seccionesPreferidas": [
+        "Datos del paciente",
+        "Lugar y fecha",
+        "Tipo de informe",
+        "Evolución del período",
+        "Intervención realizada"
+      ],
+      "unidades": {
+        "rom": "no aplica (fonoaudiología)",
+        "dolor": "no aplica (fonoaudiología)",
+        "fuerza": "no aplica (fonoaudiología)"
+      },
+      "reglas": [
+        "No usar escalas kinesiológicas (ROM/EVA/Daniels)",
+        "Describir evolución de forma cualitativa/narrativa",
+        "No abreviar el diagnóstico de base",
+        "Informe semestral es variante válida, no error"
+      ]
+    }
+  },
+  "pacientes": [
+    {
+      "id": "ejemplo-paciente-fono",
+      "nombre": "Paciente",
+      "apellido": "Ejemplo",
+      "genero": "femenino",
+      "edad": 58,
+      "diagnostico": "Seguimiento fonoaudiológico de ejemplo (control postural, fonación y deglución)",
+      "desde": "2026-01",
+      "ultimaSesion": "2026-06",
+      "cantidadSesiones": 6,
+      "foco": [
+        "Control de tronco, musculatura cervical y cintura escapular",
+        "Coordinación fono-respiratoria con Tracto Vocal Semiocluido (TVSO)",
+        "Optimización de la deglución"
+      ],
+      "sesiones": [
+        {
+          "fecha": "2026-01",
+          "tipo": "Evolución mensual",
+          "trabajo": "Control postural, fonación y deglución",
+          "registros": [],
+          "observaciones": "Ejemplo: mayor labilidad emocional al inicio del seguimiento. Orientada en tiempo y espacio. Dificultades en control postural y estabilidad; ingresa acompañada, con andador.",
+          "informePdf": "Informe Ejemplo Enero 2026 - Fono.pdf"
+        },
+        {
+          "fecha": "2026-02",
+          "tipo": "Evolución mensual",
+          "trabajo": "Control postural, fonación y deglución",
+          "registros": [],
+          "observaciones": "Ejemplo: leve mejora anímica respecto al mes anterior. Persisten dificultades en control postural; ingresa acompañada, con andador.",
+          "informePdf": "Informe Ejemplo Febrero 2026 - Fono.pdf"
+        },
+        {
+          "fecha": "2026-03",
+          "tipo": "Evolución mensual",
+          "trabajo": "Control postural, fonación y deglución",
+          "registros": [],
+          "observaciones": "Ejemplo: estilo comunicativo frontal, orientada en tiempo y espacio. Ingresa acompañada, con andador.",
+          "informePdf": "Informe Ejemplo Marzo 2026 - Fono.pdf"
+        },
+        {
+          "fecha": "2026-04",
+          "tipo": "Evolución mensual",
+          "trabajo": "Control postural, fonación y deglución",
+          "registros": [],
+          "observaciones": "Ejemplo: respuestas espontáneas, con risa. Orientada en tiempo y espacio. Ingresa acompañada, con andador.",
+          "informePdf": "Informe Ejemplo Abril 2026 - Fono.pdf"
+        },
+        {
+          "fecha": "2026-06",
+          "tipo": "Evolución semestral",
+          "trabajo": "Revisión semestral: control postural, fonación y deglución",
+          "registros": [],
+          "observaciones": "NOTA de ejemplo: archivo original nombrado 'Mayo 2026' pero fechado 'Junio 2026'; se usa la fecha del cuerpo del documento. Aumento de inestabilidad de tronco respecto al período previo.",
+          "informePdf": "Informe Ejemplo Mayo 2026 - Fono.pdf"
+        },
+        {
+          "fecha": "2026-06",
+          "tipo": "Evolución mensual",
+          "trabajo": "Control postural, fonación (TVSO) y deglución",
+          "registros": [],
+          "observaciones": "Ejemplo: mejor ánimo; disminuyen las verbalizaciones de frustración. Aumento de inestabilidad de tronco.",
+          "informePdf": "Informe Ejemplo Junio 2026 - Fono.pdf"
+        }
+      ]
+    }
+  ],
+  "generadoEl": "2026-07-01"
+}
