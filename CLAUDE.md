@@ -3,8 +3,8 @@
 A Claude.ai **Agent Skill** that drafts kinesiology evolution reports and saves them to
 Google Drive, keeping a structured per-patient memory so reports improve over time.
 
-A companion **web dashboard** (Aqus design system) is planned to visualize each patient's
-history; it's not included in this repo yet and will be added once its dependencies are ready.
+A companion **web dashboard** (Aqus design system) in `dashboard/` visualizes each patient's
+history. It's a static Vite + React SPA deployed to Vercel — see `docs/deploy-dashboard.md`.
 
 ## Structure
 - `skills/kine/` — the Agent Skill (this is uploaded to Claude.ai)
@@ -12,8 +12,9 @@ history; it's not included in this repo yet and will be added once its dependenc
   - `reference/` — methodology loaded on demand (sections, writing, extraction,
     comparison, template analysis, panel sync)
   - `assets/informe-ejemplo.md` — the gold-standard example report
+- `dashboard/` — static Vite + React SPA (Aqus) for patient history; deploys to Vercel
 - `drive-content/` — config and data templates (CLAUDE.MD, perfil.json, historia.json, kine-data.json)
-- `docs/` — setup guide and the Drive layout
+- `docs/` — setup guide, Drive layout, dashboard deploy guide
 - `tests/scenarios/` — manual validation scenarios for the skill
 
 ## Separation of concerns
