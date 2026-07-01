@@ -5,6 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "build:skill-zip": "node scripts/build-skill-zip.mjs",
+    "prebuild": "npm run build:skill-zip",
+    "predev": "npm run build:skill-zip",
     "build": "vite build",
     "preview": "vite preview",
     "test": "vitest run"
@@ -17,6 +20,7 @@
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^4.3.4",
+    "archiver": "^7.0.1",
     "vite": "^5.4.11",
     "vitest": "^3.2.6"
   }
