@@ -93,7 +93,8 @@ see and edit. In addition to CLAUDE.MD, update `Kine/Panel – datos automático
 - `estilo` — passive/active voice, how the patient is referred to.
 - `tratamientosFrecuentes` — treatments that appear often in their reports.
 - `seccionesPreferidas` — the consolidated section order.
-- `unidades` — habitual units (grados, EVA, Daniels…).
+- `metricas` — how this professional measures progress, as `{etiqueta, escala}` pairs
+  (may be empty for narrative-only practices; don't assume ROM/EVA/Daniels).
 - `reglas` — short phrases from the "Reglas de Redacción Propias".
 
 CLAUDE.MD stays the authority for generating reports; `perfil.json` is the structured
