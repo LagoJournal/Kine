@@ -1,11 +1,26 @@
 const API = 'https://www.googleapis.com/drive/v3/files'
 
-export class KineDataNotFoundError extends Error {}
+export class KineDataNotFoundError extends Error {
+  constructor(message) {
+    super(message)
+    this.name = 'KineDataNotFoundError'
+  }
+}
+
+/** Thrown for any non-ok Drive response; carries the HTTP status so callers
+ *  can tell an expired/revoked token (401/403) apart from other failures. */
+export class DriveApiError extends Error {
+  constructor(message, status) {
+    super(message)
+    this.name = 'DriveApiError'
+    this.status = status
+  }
+}
 
 async function driveFetchJson(url, token) {
   const res = await fetch(url, { headers: { Authorization: `Bearer ${token}` } })
   if (!res.ok) {
-    throw new Error(`Drive API respondió ${res.status}`)
+    throw new DriveApiError(`Drive API respondió ${res.status}`, res.status)
   }
   return res.json()
 }
@@ -28,7 +43,7 @@ export async function fetchKineData(token) {
     headers: { Authorization: `Bearer ${token}` },
   })
   if (!res.ok) {
-    throw new Error(`No pude leer kine-data.json (${res.status})`)
+    throw new DriveApiError(`No pude leer kine-data.json (${res.status})`, res.status)
   }
   return res.json()
 }
