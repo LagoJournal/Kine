@@ -72,8 +72,14 @@ export function PerfilView() {
   }, [])
 
   // Drive connect/disconnect swaps `perfil` under us — resync the local edit
-  // buffers so the form isn't left showing stale (or mock) data.
+  // buffers so the form isn't left showing stale (or mock) data. Skipped
+  // while the user is mid-edit (tracked via a ref, not a dep, so toggling
+  // `editing` itself doesn't re-fire this and clobber a just-saved edit)
+  // so an in-flight silent session restore can't silently wipe unsaved work.
+  const editingRef = React.useRef(editing)
+  React.useEffect(() => { editingRef.current = editing }, [editing])
   React.useEffect(() => {
+    if (editingRef.current) return
     setIdent(perfil.identidad)
     setPat(perfil.patrones)
   }, [perfil])
@@ -235,13 +241,27 @@ export function PerfilView() {
                   </span>
                 </Stack>
                 {source === 'drive' ? (
-                  <Button variant="secondary" onClick={disconnect}>Desconectar</Button>
+                  <Button
+                    variant="secondary"
+                    onClick={disconnect}
+                    disabled={editing}
+                    title={editing ? 'Guardá tus cambios antes de desconectar' : undefined}
+                  >
+                    Desconectar
+                  </Button>
                 ) : (
                   <Button
                     variant="primary"
                     icon={<i className="ph ph-google-logo" />}
                     onClick={connect}
-                    disabled={!driveConfigured || status === 'loading'}
+                    disabled={editing || !driveConfigured || status === 'loading'}
+                    title={
+                      editing
+                        ? 'Guardá tus cambios antes de conectar'
+                        : !driveConfigured
+                          ? 'Falta configurar VITE_GOOGLE_CLIENT_ID'
+                          : undefined
+                    }
                   >
                     {status === 'loading' ? 'Conectando…' : 'Conectar Google Drive'}
                   </Button>
