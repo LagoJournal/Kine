@@ -55,7 +55,7 @@ Preference precedence: **CLAUDE.MD** → **`perfil.json` (patrones)** → skill 
 5. **Ask for confirmation:** "¿Hago algún cambio o lo genero en PDF?"
 6. **Iterate** if changes are requested: modify only what's flagged and show the new version.
 7. **Generate the PDF** when confirmed: apply CLAUDE.MD's format, name the file per CLAUDE.MD's convention, and save it in the Drive folder CLAUDE.MD specifies (create the month subfolder if missing). Confirm name and location. If you can't write to Drive, offer the PDF for download and say where to upload it.
-8. **Update the patient's memory** (in addition to the PDF). Create or update `Kine/Panel – datos automáticos/pacientes/{Apellido, Nombre}.json`: add this session (fecha, tipo, número, tratamiento, medidas ROM/EVA/fuerza, plan, observaciones, and the PDF name) without deleting the previous ones. If you noticed new patterns in the professional's style, also update `perfil.json`. Follow the schema in `datos-estructurados.md` and don't invent data. If you can't write to Drive, say so in one line; the PDF is still delivered.
+8. **Update the patient's memory** (in addition to the PDF). Create or update `Kine/Panel – datos automáticos/pacientes/{Apellido, Nombre}.json`: add this session (fecha, tipo, número, tratamiento, `registros` etiqueta/valor with the professional's own labels — may be empty for narrative sessions, don't force ROM/EVA/Daniels — plan, observaciones, and the PDF name) without deleting the previous ones. If you noticed new patterns in the professional's style, also update `perfil.json`. Follow the schema in `datos-estructurados.md` and don't invent data. If you can't write to Drive, say so in one line; the PDF is still delivered.
 
 ### B. Multiple patients in one message
 1. Segment the input by patient (see `extraccion-datos.md`, section "Separar varios pacientes").
@@ -77,19 +77,24 @@ Use this flow when CLAUDE.MD doesn't exist or when the user wants to regenerate/
 
 1. **Ask for the location.** Ask which Drive folder holds the reports or reference documents. It can be a folder with PDFs, Google Docs, or any text document.
 2. **Read the documents.** Read between 3 and 10 representative documents (prioritize the most recent). Apply `analisis-plantillas.md` to extract patterns.
-3. **Analyze and consolidate.** Identify the section structure, order, style, units, terminology, and format the documents have in common. Where they vary, prioritize the most frequent pattern.
-4. **Generate the CLAUDE.MD draft.** Build a complete CLAUDE.MD with the standard sections (`## Rol y Lenguaje`, `## Formato de Página`, `## Secciones del Informe`, `## Campos Obligatorios`, `## Convención de Nombres`, `## Carpeta de Destino`, `## Reglas de Redacción Propias`) filled with what you extracted. Show it in the chat.
-5. **Ask for confirmation and tweaks:** "Armé esta configuración basándome en tus informes. ¿Querés que cambie algo?"
-6. **Iterate** if changes are requested.
-7. **Save to Drive.** When confirmed, create (or update) the CLAUDE.MD Google Doc in `Kine/`. If the `Kine/` folder doesn't exist, create it. Confirm it was saved.
-8. **Offer to continue:** "Listo, la configuración quedó guardada. ¿Querés generar un informe ahora?"
+3. **Analyze and consolidate.** Identify the section structure, order, style, terminology, and format the documents have in common. Where they vary, prioritize the most frequent pattern.
+4. **Infer how this professional measures progress and runs sessions.** From their reports, read the vocabulary they actually use to track progress and record it as `perfil.patrones.metricas` — `{ etiqueta, escala }` pairs in the professional's own words (e.g. `{ "etiqueta": "Dolor al subir escaleras", "escala": "0-10 (menos es mejor)" }`). Do **not** assume kinesiology scales (ROM/EVA/Daniels); a narrative-only practice (fonoaudiología, psicomotricidad, neuro-rehabilitación) gets empty `metricas`. Reflect this in the CLAUDE.MD writing rules too — don't hardcode measurement types the professional doesn't use.
+5. **Generate the CLAUDE.MD draft.** Build a complete CLAUDE.MD with the standard sections (`## Rol y Lenguaje`, `## Formato de Página`, `## Secciones del Informe`, `## Campos Obligatorios`, `## Convención de Nombres`, `## Carpeta de Destino`, `## Reglas de Redacción Propias`) filled with what you extracted. Show it in the chat.
+6. **Ask for confirmation and tweaks:** "Armé esta configuración basándome en tus informes. ¿Querés que cambie algo?"
+7. **Iterate** if changes are requested.
+8. **Save to Drive.** When confirmed, create (or update) the CLAUDE.MD Google Doc in `Kine/`. If the `Kine/` folder doesn't exist, create it. Confirm it was saved.
+9. **Offer to continue:** "Listo, la configuración quedó guardada. ¿Querés generar un informe ahora?"
 
 ### F. Sync the dashboard (`/kine-sync`)
 Consolidate the memory into the dataset the web dashboard reads. Follow `sincronizacion-panel.md`:
 
 1. **Read the profile and histories.** `perfil.json` + all `pacientes/*.json` in `Kine/Panel – datos automáticos/`.
 2. **Fill in what's missing.** For patients with a PDF but no structured history, reconstruct it from the PDFs (warn if there are several).
-3. **Build `kine-data.json`** with the schema in `sincronizacion-panel.md` (profile + patients + condensed sessions + `generadoEl`).
+3. **Build `kine-data.json`** with the schema in `sincronizacion-panel.md` (profile + patients + condensed sessions + `generadoEl`). While building it:
+   - **Assign a progress `estado` per patient** — exactly one of `recien-empezando`, `en-camino`, `cada-vez-mejor`, `casi-pleno`, `sin-cambios`, `un-paso-atras` — read from the qualitative history. It's a warm, human read: lean on `observaciones`, not just numbers. Optionally add `estadoNota` to override the panel's default note. If you truly can't tell, omit `estado`.
+   - **Carry `genero` and `motivo` per patient** when the reports reveal them (gender as the report reflects it; motivo in the patient's own words). Omit either if unknown.
+   - **Put whatever was measured into `registros: [{ etiqueta, valor }]`** using the professional's own labels, with the unit inside `valor`. Leave `registros` empty for narrative sessions. Don't force ROM/EVA/Daniels or any fixed metric.
+   - **Keep dates at the granularity the reports use** (`YYYY`, `YYYY-MM`, or `YYYY-MM-DD`). Don't invent a day or month that isn't in the source.
 4. **Save it** to `Kine/Panel – datos automáticos/kine-data.json` (replace the previous one).
 5. **Confirm** in one line: how many patients and sessions were synced, and the date. If you can't write to Drive, say what happened.
 
