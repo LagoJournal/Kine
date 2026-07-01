@@ -1,6 +1,6 @@
 import React from 'react'
 import {
-  Section, Container, Stack, Card, Wordmark, TreeView, Alert, Button, Divider,
+  Section, Container, Stack, Card, Wordmark, TreeView, Alert, Button, Divider, LiquidBubble,
 } from '@agustin/aqus'
 
 const heading = { margin: 0, font: 'var(--text-heading-sm)', color: 'var(--text-primary)' }
@@ -18,6 +18,14 @@ const codeChip = {
   padding: '2px var(--space-2)',
   borderRadius: 'var(--radius-sm)',
 }
+
+// What the day-to-day feels like — one line per beat of the loop.
+const SIENTE = [
+  { icon: 'ph-microphone', t: 'Contás', d: 'Le decís cómo fue la sesión, en tus palabras.' },
+  { icon: 'ph-pen-nib', t: 'Escribe', d: 'Redacta la evolución con tu estilo y reglas.' },
+  { icon: 'ph-file-pdf', t: 'Arma el PDF', d: 'Lo guarda en la carpeta del paciente en tu Drive.' },
+  { icon: 'ph-arrows-clockwise', t: 'Recuerda', d: 'Actualiza la ficha para la próxima vez.' },
+]
 
 // The whole onboarding, one flow, download → first report.
 const STEPS = [
@@ -99,6 +107,27 @@ export function GuiaView() {
               </Button>
             </Stack>
           </Card>
+
+          {/* How the daily loop feels — four beats, calm and concrete */}
+          <Stack gap={3}>
+            <span style={labelStyle}>Cómo se siente usarlo</span>
+            <div className="siente-grid">
+              {SIENTE.map((s) => (
+                <Card key={s.t}>
+                  <Stack gap={3} align="center" style={{ textAlign: 'center' }}>
+                    <div style={{ position: 'relative', width: 56, height: 56, display: 'grid', placeItems: 'center' }}>
+                      <LiquidBubble size={56} color="var(--accent-light)" />
+                      <i className={`ph ${s.icon}`} style={{ position: 'absolute', fontSize: 24, color: 'var(--accent-text)' }} aria-hidden="true" />
+                    </div>
+                    <Stack gap={1} align="center">
+                      <strong style={{ color: 'var(--text-primary)' }}>{s.t}</strong>
+                      <span style={lead}>{s.d}</span>
+                    </Stack>
+                  </Stack>
+                </Card>
+              ))}
+            </div>
+          </Stack>
 
           {/* One merged setup flow */}
           <Card>

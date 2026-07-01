@@ -23,3 +23,14 @@ body {
   min-height: 100vh;
   background: var(--bg);
 }
+
+/* Onboarding "cómo se siente usarlo" grid — 1 col on phones, an even 2×2 in
+   the narrow Guía column so four cards never leave an orphan + empty gap. */
+.siente-grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: 1fr;
+}
+@media (min-width: 520px) {
+  .siente-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}

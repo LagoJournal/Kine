@@ -1,15 +1,15 @@
 import React from 'react'
 import { Stack, LiquidBubble } from '@agustin/aqus'
-import { treatmentState } from '../data/helpers.js'
+import { progressState } from '../data/helpers.js'
 
 /**
- * Organic liquid blob standing in for the patient's current treatment state —
- * a feeling, not a metric. Color is always paired with a word (Von Restorff /
- * accessibility: never color alone). `size="lg"` shows the note too.
+ * Organic liquid dot standing in for how a patient is coming along — a feeling,
+ * not a metric. Meaning rests on dot + word + color together, never color alone
+ * (Von Restorff / a11y). `size="lg"` adds the warm one-line note.
  */
 export function EstadoBubble({ paciente, size = 'sm' }) {
-  const st = treatmentState(paciente)
-  const dim = size === 'lg' ? 20 : 14
+  const st = progressState(paciente)
+  const dim = size === 'lg' ? 18 : 13
 
   return (
     <Stack direction="row" gap={2} align="center">
@@ -19,7 +19,7 @@ export function EstadoBubble({ paciente, size = 'sm' }) {
           style={{
             fontSize: size === 'lg' ? 'var(--text-body-sm)' : 'var(--text-caption)',
             fontWeight: 'var(--weight-medium)',
-            color: 'var(--text-primary)',
+            color: st.color,
           }}
         >
           {st.label}

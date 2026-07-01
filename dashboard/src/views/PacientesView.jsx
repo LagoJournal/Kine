@@ -1,76 +1,85 @@
 import React from 'react'
 import {
-  Section, Container, Stack, Card, PageHeader, SearchInput, Avatar, Badge,
-  Button, Skeleton, EmptyState, Alert, Dialog, Divider, Select,
+  Section, Container, Stack, Card, PageHeader, SearchInput, Avatar,
+  Button, Skeleton, EmptyState, Dialog, Divider, SegmentedControl, LiquidBubble,
 } from '@agustin/aqus'
-import { initials, shortDate, daysAgo, recientes, consultoriosDe } from '../data/helpers.js'
+import { initials, shortDate, daysAgo } from '../data/helpers.js'
 import { EstadoBubble } from '../components/EstadoBubble.jsx'
 import { useData } from '../data/DataContext.jsx'
 
 const body = { fontSize: 'var(--text-body-sm)', color: 'var(--text-secondary)' }
-const label = {
-  fontSize: 'var(--text-caption)', color: 'var(--text-muted)',
-  textTransform: 'uppercase', letterSpacing: '0.06em',
-}
+const caption = { fontSize: 'var(--text-caption)', color: 'var(--text-muted)', minWidth: 0 }
 
-/* Compact quick-access chip for the "recently treated" rail. */
-function RecienteChip({ p, onOpen }) {
-  return (
-    <Card interactive onClick={onOpen} style={{ minWidth: 200, flex: '0 0 auto' }}>
-      <Stack gap={3}>
-        <Stack direction="row" gap={2} align="center">
-          <Avatar name={initials(p)} size={36} />
-          <Stack gap={0} style={{ minWidth: 0 }}>
-            <strong style={{ color: 'var(--text-primary)' }}>{p.nombre} {p.apellido}</strong>
-            <span style={body}>Última {daysAgo(p.ultimaSesion)}</span>
-          </Stack>
-        </Stack>
-        <EstadoBubble paciente={p} />
-      </Stack>
-    </Card>
-  )
-}
+const fold = (s) => (s ?? '').normalize('NFD').replace(/[̀-ͯ]/g, '').toUpperCase()
+const fullName = (p) => [p?.nombre, p?.apellido].filter(Boolean).join(' ') || 'Paciente'
 
-/* Full patient card — flat and equal, no featured. */
+/* One patient in the directory — name, motive, and how they're coming along.
+   The soft corner blob is decoration only; the status is the single emphasis. */
 function PacienteCard({ p, onOpen }) {
+  const meta = [p?.edad != null ? `${p.edad} años` : null, p?.consultorio].filter(Boolean).join(' · ')
   return (
-    <Card interactive onClick={onOpen} style={{ height: '100%' }}>
-      <Stack gap={3} style={{ height: '100%' }}>
+    <Card interactive onClick={onOpen} style={{ position: 'relative', overflow: 'hidden' }}>
+      <div
+        aria-hidden="true"
+        style={{ position: 'absolute', top: -44, right: -34, opacity: 0.5, pointerEvents: 'none' }}
+      >
+        <LiquidBubble size={120} color="var(--accent-light)" />
+      </div>
+
+      <Stack gap={3} style={{ position: 'relative' }}>
         <Stack direction="row" gap={3} align="center">
           <Avatar name={initials(p)} size={44} />
           <Stack gap={0} style={{ minWidth: 0 }}>
-            <strong style={{ color: 'var(--text-primary)' }}>{p.nombre} {p.apellido}</strong>
-            <span style={body}>{p.edad} años · desde el {shortDate(p.desde)}</span>
+            <strong style={{ color: 'var(--text-primary)' }}>{fullName(p)}</strong>
+            {meta && <span style={body}>{meta}</span>}
           </Stack>
         </Stack>
 
-        <p style={{ ...body, margin: 0, minWidth: 0 }}>{p.diagnostico}</p>
-
-        {p.consultorio && (
-          <Stack direction="row" gap={1} align="center" style={{ minWidth: 0 }}>
-            <i className="ph ph-map-pin" style={{ color: 'var(--text-muted)', fontSize: 15 }} aria-hidden="true" />
-            <span style={{ fontSize: 'var(--text-caption)', color: 'var(--text-muted)', minWidth: 0 }}>
-              {p.consultorio}
-            </span>
-          </Stack>
-        )}
+        {p?.diagnostico && <p style={{ ...body, margin: 0, minWidth: 0 }}>{p.diagnostico}</p>}
 
         <Divider />
-        <Stack direction="row" justify="space-between" align="center" wrap gap={2} style={{ marginTop: 'auto' }}>
+        <Stack direction="row" justify="space-between" align="center" wrap gap={2}>
           <EstadoBubble paciente={p} />
-          <span style={body}>Última {daysAgo(p.ultimaSesion)}</span>
+          {daysAgo(p?.ultimaSesion) && <span style={caption}>Última {daysAgo(p.ultimaSesion)}</span>}
         </Stack>
       </Stack>
     </Card>
   )
 }
 
+/* Group the list along the chosen dimension, then order the groups. */
+function grouped(lista, mode, consultoriosOrden) {
+  const map = new Map()
+  for (const p of lista) {
+    const key = mode === 'consultorio'
+      ? (p?.consultorio || 'Sin consultorio')
+      : (fold(p?.apellido || p?.nombre).charAt(0) || '#')
+    if (!map.has(key)) map.set(key, [])
+    map.get(key).push(p)
+  }
+  for (const arr of map.values()) {
+    arr.sort((a, b) => fullName(a).localeCompare(fullName(b), 'es'))
+  }
+
+  let keys = [...map.keys()]
+  if (mode === 'consultorio') {
+    const rank = (k) => {
+      if (k === 'Sin consultorio') return Number.MAX_SAFE_INTEGER
+      const i = consultoriosOrden.indexOf(k)
+      return i === -1 ? consultoriosOrden.length : i
+    }
+    keys.sort((a, b) => (rank(a) - rank(b)) || a.localeCompare(b, 'es'))
+  } else {
+    keys.sort((a, b) => a.localeCompare(b, 'es'))
+  }
+  return keys.map((k) => ({ key: k, items: map.get(k) }))
+}
+
 export function PacientesView({ onOpen }) {
-  const { pacientes: ALL } = useData()
+  const { pacientes: ALL, perfil } = useData()
   const [loading, setLoading] = React.useState(true)
-  const [error, setError] = React.useState(false)
   const [q, setQ] = React.useState('')
-  const [cons, setCons] = React.useState('')
+  const [mode, setMode] = React.useState('persona') // 'persona' | 'consultorio'
   const [newOpen, setNewOpen] = React.useState(false)
 
   React.useEffect(() => {
@@ -78,19 +87,17 @@ export function PacientesView({ onOpen }) {
     return () => clearTimeout(t)
   }, [])
 
-  const retry = () => { setError(false); setLoading(true); setTimeout(() => setLoading(false), 500) }
-
   const term = q.trim().toLowerCase()
-  const byCons = (p) => cons === '' || p.consultorio === cons
-  const rows = ALL
-    .filter((p) => `${p.nombre} ${p.apellido} ${p.diagnostico}`.toLowerCase().includes(term))
-    .filter(byCons)
-  const recents = recientes(ALL.filter(byCons))
-  const consultorios = consultoriosDe(ALL)
-  const consOptions = [
-    { value: '', label: 'Todos los consultorios' },
-    ...consultorios.map((c) => ({ value: c, label: c })),
-  ]
+  const matches = React.useMemo(
+    () => (ALL ?? []).filter((p) => `${fullName(p)} ${p?.diagnostico ?? ''}`.toLowerCase().includes(term)),
+    [ALL, term],
+  )
+
+  const consultoriosOrden = perfil?.identidad?.consultorios ?? []
+  const groups = React.useMemo(
+    () => grouped(matches, mode, consultoriosOrden),
+    [matches, mode, consultoriosOrden],
+  )
 
   return (
     <Section>
@@ -106,28 +113,16 @@ export function PacientesView({ onOpen }) {
             }
           />
 
-          {/* Loading */}
           {loading && (
             <Stack gap={5}>
               <Skeleton width="100%" height={52} />
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 20 }}>
-                {Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} width="100%" height={170} />)}
+                {Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} width="100%" height={150} />)}
               </div>
             </Stack>
           )}
 
-          {/* Error */}
-          {!loading && error && (
-            <Alert tone="danger" title="No se pudo cargar la lista">
-              No llegaron los datos del panel. Revisá la conexión y volvé a intentar.
-              <div style={{ marginTop: 'var(--space-3)' }}>
-                <Button variant="secondary" size="sm" onClick={retry}>Reintentar</Button>
-              </div>
-            </Alert>
-          )}
-
-          {/* Empty — no patients at all */}
-          {!loading && !error && ALL.length === 0 && (
+          {!loading && (ALL ?? []).length === 0 && (
             <EmptyState
               icon={<i className="ph ph-users-three" />}
               title="Todavía no hay pacientes"
@@ -136,42 +131,42 @@ export function PacientesView({ onOpen }) {
             />
           )}
 
-          {!loading && !error && ALL.length > 0 && (
+          {!loading && (ALL ?? []).length > 0 && (
             <>
-              {/* Find */}
-              <Stack direction="row" gap={3} align="end" wrap>
+              {/* Find + choose the grouping dimension */}
+              <Stack direction="row" gap={3} align="center" justify="space-between" wrap>
                 <div style={{ flex: 1, minWidth: 220 }}>
                   <SearchInput value={q} onChange={setQ} placeholder="Buscar por nombre o motivo de consulta…" />
                 </div>
-                {consultorios.length > 1 && (
-                  <div style={{ minWidth: 220 }}>
-                    <Select label="" value={cons} onChange={setCons} options={consOptions} />
-                  </div>
-                )}
+                <SegmentedControl
+                  value={mode}
+                  onChange={setMode}
+                  options={[
+                    { value: 'persona', label: 'Por persona' },
+                    { value: 'consultorio', label: 'Por consultorio' },
+                  ]}
+                />
               </Stack>
 
-              {/* Recently treated — quick access (hidden while searching).
-                  Vertical padding gives card shadow + hover lift room so the
-                  horizontal scroll container doesn't clip them. */}
-              {term === '' && recents.length > 0 && (
-                <Stack gap={2}>
-                  <span style={label}>Atendidos hace poco</span>
-                  <div style={{
-                    display: 'flex', gap: 12, overflowX: 'auto',
-                    padding: 'var(--space-3) 4px', margin: '0 -4px',
-                  }}>
-                    {recents.map((p) => <RecienteChip key={p.id} p={p} onOpen={() => onOpen(p.id)} />)}
-                  </div>
-                </Stack>
-              )}
-
-              {/* Full list */}
-              {rows.length > 0 ? (
-                <Stack gap={2}>
-                  <span style={label}>{term ? 'Resultados' : 'Todos'} · {rows.length}</span>
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 20 }}>
-                    {rows.map((p) => <PacienteCard key={p.id} p={p} onOpen={() => onOpen(p.id)} />)}
-                  </div>
+              {/* Grouped directory */}
+              {groups.length > 0 ? (
+                <Stack gap={5}>
+                  {groups.map((g) => (
+                    <Stack key={g.key} gap={3}>
+                      <Stack direction="row" gap={3} align="center">
+                        <h2 style={{ margin: 0, font: 'var(--text-heading)', color: 'var(--accent-text)', whiteSpace: 'nowrap' }}>
+                          {g.key}
+                        </h2>
+                        <div style={{ flex: 1 }}><Divider /></div>
+                        <span style={{ ...caption, whiteSpace: 'nowrap' }}>
+                          {g.items.length} {g.items.length === 1 ? 'persona' : 'personas'}
+                        </span>
+                      </Stack>
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 20 }}>
+                        {g.items.map((p) => <PacienteCard key={p.id ?? fullName(p)} p={p} onOpen={() => onOpen(p.id)} />)}
+                      </div>
+                    </Stack>
+                  ))}
                 </Stack>
               ) : (
                 <EmptyState
