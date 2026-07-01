@@ -58,8 +58,8 @@ function MockBanner({ dismissed, onDismiss }) {
   // below the text — reads cleanly when the bar wraps on a phone.
   return (
     <Banner tone="accent" onClose={onDismiss}>
-      <Stack gap={2} align="start">
-        <span>Estás viendo datos de ejemplo. Conectá tu Google Drive para ver tus pacientes reales.</span>
+      <Stack gap={2} align="start" style={{ width: '100%', textAlign: 'left' }}>
+        <span style={{ textAlign: 'left' }}>Estás viendo datos de ejemplo. Conectá tu Google Drive para ver tus pacientes reales.</span>
         <Button
           variant="secondary"
           size="sm"
