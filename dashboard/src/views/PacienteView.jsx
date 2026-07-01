@@ -3,7 +3,7 @@ import {
   Section, Container, Stack, Card, Avatar, Badge, Button, Breadcrumb,
   Timeline, Divider, Dialog, EmptyState, LiquidBubble,
 } from '@agustin/aqus'
-import { initials, shortDate, longDate, daysAgo, parseMetric, progressState } from '../data/helpers.js'
+import { initials, shortDate, longDate, daysAgo, parseMetric, progressState, gendered } from '../data/helpers.js'
 import { useData } from '../data/DataContext.jsx'
 
 const heading = { margin: 0, font: 'var(--text-heading-sm)', color: 'var(--text-primary)' }
@@ -43,10 +43,15 @@ function ComoViene({ paciente }) {
 function LoQueLaTrajo({ paciente }) {
   const quote = paciente?.motivo ?? paciente?.enPalabras ?? paciente?.diagnostico
   if (!quote) return null
+  const titulo = gendered(paciente?.genero, {
+    f: 'Lo que la trajo',
+    m: 'Lo que lo trajo',
+    n: 'Lo que motivó la consulta',
+  })
   return (
     <Card style={{ background: 'var(--accent-light)', border: '1px solid var(--accent)' }}>
       <Stack gap={2}>
-        <span style={{ ...label, color: 'var(--accent-text)' }}>Lo que la trajo</span>
+        <span style={{ ...label, color: 'var(--accent-text)' }}>{titulo}</span>
         <p style={{ margin: 0, font: 'var(--text-body)', fontStyle: 'italic', color: 'var(--text-primary)' }}>
           “{quote}”
         </p>
