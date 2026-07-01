@@ -3,7 +3,7 @@ import {
   Section, Container, Stack, Card, PageHeader, Avatar, Badge, Tag, Button,
   Input, Textarea, Divider, Alert, Skeleton, DescriptionList, IconButton, Prose,
 } from '@agustin/aqus'
-import { perfil as SEED } from '../data.js'
+import { perfil as SEED } from '../data/mock.js'
 
 const heading = { margin: 0, font: 'var(--text-heading-sm)', color: 'var(--text-primary)' }
 const hint = { margin: 0, fontSize: 'var(--text-body-sm)', color: 'var(--text-secondary)' }
