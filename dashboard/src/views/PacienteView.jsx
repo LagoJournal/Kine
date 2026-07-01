@@ -129,7 +129,6 @@ function SesionContenido({ s }) {
             borderInlineStart: '2px solid var(--accent)',
             color: 'var(--text-secondary)',
             fontStyle: 'italic',
-            textAlign: 'justify',
           }}
         >
           {s.observaciones}
@@ -164,7 +163,7 @@ export function PacienteView({ id, onBack }) {
     .map((s, i) => ({ ...s, numero: i + 1 }))
   const sesiones = [...asc].reverse()
   const latest = sesiones[0] ?? null
-  const informes = sesiones.filter((s) => s.informePdf)
+  const informes = sesiones.filter((s) => s.informePdf || s.informeUrl)
   const desde = longDate(p.desde)
   const identMeta = [
     p.edad != null ? `${p.edad} años` : null,
@@ -172,7 +171,11 @@ export function PacienteView({ id, onBack }) {
     p.consultorio,
   ].filter(Boolean).join(' · ')
 
-  const openPdf = (name) => window.open(`#${name}`, '_self')
+  // Open the report on Drive when Kine recorded its link; else fall back.
+  const openInforme = (s) =>
+    s.informeUrl
+      ? window.open(s.informeUrl, '_blank', 'noopener')
+      : window.open(`#${s.informePdf}`, '_self')
 
   return (
     <Section>
@@ -219,7 +222,7 @@ export function PacienteView({ id, onBack }) {
               <span style={label}>Informes en tu Drive</span>
               <Stack gap={2}>
                 {informes.map((s) => (
-                  <Card key={s.informePdf} interactive onClick={() => openPdf(s.informePdf)}>
+                  <Card key={s.informePdf ?? s.numero} interactive onClick={() => openInforme(s)}>
                     <Stack direction="row" gap={3} align="center">
                       <div style={{ position: 'relative', width: 40, height: 40, display: 'grid', placeItems: 'center', flex: '0 0 auto' }}>
                         <LiquidBubble size={40} color="var(--accent-light)" />
