@@ -1,7 +1,9 @@
 # Deploy the dashboard to Vercel (via GitHub)
 
-The dashboard is a static Vite + React SPA in [`dashboard/`](../dashboard). Data is
-currently bundled (`dashboard/src/data.js`) — no runtime backend, env vars, or secrets.
+The dashboard is a static Vite + React SPA in [`dashboard/`](../dashboard). No runtime
+backend — it either reads mock data bundled in `dashboard/src/data/mock.js`, or reads
+your real `kine-data.json` straight from Google Drive via client-side OAuth (one env
+var, see Notes below and [`docs/google-drive-setup.md`](google-drive-setup.md)).
 
 ## One-time setup
 
@@ -37,8 +39,3 @@ No app change needed — it's a subdomain root, so Vite's default `base: '/'` is
 - **SPA rewrites** — `vercel.json` rewrites all paths to `index.html` so deep links
   (`/guia`, `/pacientes`, `/perfil`) don't 404 on refresh/bookmark.
 - **Lockfile** — `package-lock.json` is committed, so builds are reproducible (`npm ci`).
-
-## Live data (later)
-
-When the dashboard reads the real `kine-data.json` that `/kine-sync` builds on Drive,
-swap `data.js` for a fetch and add the dataset URL as a Vercel environment variable.
