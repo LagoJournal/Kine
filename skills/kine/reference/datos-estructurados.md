@@ -87,7 +87,7 @@ values to fill the schema.
 ## How to update the history (flow A, step 8)
 1. Read the patient's file if it exists; if not, start a new one with `paciente` + `sesiones: []`.
 2. Append the current session to the end of `sesiones` (don't replace the previous ones).
-3. Update `actualizadoEl`.
+3. Update the `paciente` fields if the report adds or corrects any (e.g. `genero`, `motivo`, `diagnostico`).
 4. Write the file to `Kine/Panel – datos automáticos/pacientes/`.
 5. If you can't write to Drive, say so in one line; the PDF report is still delivered.
 
