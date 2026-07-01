@@ -30,17 +30,12 @@ When deciding format, sections, or style, respect this order:
 ## Schema — `perfil.json`
 ```json
 {
-  "identidad": {
-    "nombre": "",
-    "matricula": "",
-    "especialidad": "",
-    "clinica": ""
-  },
+  "identidad": { "nombre": "", "matricula": "", "especialidad": "", "clinica": "" },
   "patrones": {
-    "estilo": "voz pasiva en hallazgos; paciente por apellido",
+    "estilo": "",
     "tratamientosFrecuentes": [],
     "seccionesPreferidas": [],
-    "unidades": { "rom": "grados", "dolor": "EVA 0-10", "fuerza": "Daniels 0-5" },
+    "metricas": [ { "etiqueta": "Dolor al subir escaleras", "escala": "0-10 (menos es mejor)" } ],
     "reglas": []
   },
   "actualizadoEl": "2026-06-30"
@@ -48,48 +43,46 @@ When deciding format, sections, or style, respect this order:
 ```
 - `patrones` is what the dashboard lets the user **see and edit**. If the user edited a
   rule, respect it; don't overwrite it without warning.
+- `metricas` — how *this* professional measures progress, inferred from their reports, as
+  `{ etiqueta, escala }` pairs. May be empty for narrative-only practices (e.g.
+  fonoaudiología). Never force ROM/EVA/Daniels — read what the professional actually uses.
 - `reglas` are short, actionable phrases (e.g. "No abreviar nombres de músculos").
 
 ## Schema — `pacientes/{Apellido, Nombre}.json`
 ```json
 {
   "paciente": {
-    "nombre": "María",
-    "apellido": "García",
-    "edad": 35,
-    "dni": "28.456.789",
-    "diagnostico": "Síndrome femoropatelar bilateral, predominio derecho"
+    "nombre": "",
+    "apellido": "",
+    "genero": "femenino | masculino",
+    "edad": null,
+    "diagnostico": "",
+    "motivo": ""
   },
   "sesiones": [
     {
       "fecha": "2026-06-23",
       "tipo": "Tratamiento",
-      "numeroSesion": "8 de 12",
-      "tratamiento": {
-        "ejercicios": [
-          { "nombre": "Sentadilla isométrica en pared", "series": 3, "reps": null,
-            "sostenSeg": 30, "carga": null, "rango": "60°" }
-        ],
-        "elongaciones": [],
-        "tecnicasManuales": [],
-        "agentesFisicos": [ { "modalidad": "Crioterapia", "zona": "rodillas", "duracionMin": 15 } ]
-      },
-      "medidas": {
-        "rom": [ { "movimiento": "Flexión rodilla", "lado": "derecho", "valor": 115, "unidad": "grados" } ],
-        "eva": [ { "situacion": "Subir escaleras", "valor": 3 } ],
-        "fuerza": [ { "musculo": "Cuádriceps", "lado": "derecho", "valor": "4/5" } ]
-      },
-      "plan": { "corto": [], "largo": [], "indicaciones": [] },
-      "observaciones": "Se observa mejor control motor en la sentadilla.",
-      "informePdf": "Garcia_2026-06-23_informe_evolucion.pdf"
+      "trabajo": "One line of what was worked on, in the professional's words",
+      "registros": [ { "etiqueta": "Flexión de rodilla", "valor": "115°" } ],
+      "observaciones": "How they progressed, in words. In narrative domains this is the main content.",
+      "informePdf": "..."
     }
-  ],
-  "actualizadoEl": "2026-06-23"
+  ]
 }
 ```
-The keys match the extraction schema in `extraccion-datos.md` (`paciente`, `sesion`,
-`tratamiento`, `progreso{ROM, EVA, fuerza}`, `plan`, `observaciones`). Store only what you
-have: leave `null` or empty lists where there's no data. **Don't invent** values to fill the schema.
+- `genero` — the patient's gender as the report reflects it; the dashboard uses it so its
+  copy agrees (pronouns). Omit if unknown.
+- `motivo` — the reason for consulting in the patient's own words, if the report has it.
+- `registros` — generic `etiqueta`/`valor` pairs, exactly as the professional recorded them
+  (may be empty for narrative sessions). Do not assume ROM/EVA/Daniels.
+- `fecha` — ISO date at whatever granularity the reports use: `YYYY`, `YYYY-MM`, or `YYYY-MM-DD`.
+- Kinesiology practices may keep richer optional detail per session (e.g. structured
+  exercises/measurements), but the flattened `registros` list is what `/kine-sync` emits for
+  the dashboard.
+
+Store only what you have: leave `null` or empty lists where there's no data. **Don't invent**
+values to fill the schema.
 
 ## How to update the history (flow A, step 8)
 1. Read the patient's file if it exists; if not, start a new one with `paciente` + `sesiones: []`.
